@@ -7,28 +7,35 @@ import java.awt.image.BufferedImage;
 import java.io.Serial;
 
 
-public class Canvas {
-    private Color currentColor = Color.RED;
-    private JFrame frame;
-    private JPanel panel;
+public class Canvas extends JFrame {
+    private Color currentColor = Color.BLACK;
+
+    private final JPanel jPanelDrawingArea;
+    private final JPanel jPanelColorsPalette = new JPanel();
     private BufferedImage img;
 
     public Canvas(int width, int height) {
-        frame = new JFrame();
-        frame.addComponentListener(new ComponentAdapter() {
+        this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 System.out.println("resize");
             }
         });
-        frame.setLayout(new BorderLayout());
-        frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setLayout(new BorderLayout());
+        this.setResizable(false);
+        this.setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.add(jPanelColorsPalette,  BorderLayout.NORTH);
+
+        JButton jButtonColorBlack = new JButton();
+        jButtonColorBlack.setBackground(Color.BLACK);
+        jButtonColorBlack.setBounds(0, 0, 100, 100);
+        jPanelColorsPalette.add(jButtonColorBlack);
+
 
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        panel = new JPanel() {
+        jPanelDrawingArea = new JPanel() {
             @Serial
             private static final long serialVersionUID = 1L;
 
@@ -38,43 +45,48 @@ public class Canvas {
                 present(g);
             }
         };
-        frame.addKeyListener(new KeyAdapter() {
+        this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     System.out.println("negr");
                     currentColor = Color.BLUE;
-                }
-                else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    int stredX = panel.getWidth() / 2;
-                    int stredY = panel.getHeight() / 2;
-                    for (int i = stredX; i <= panel.getWidth(); i++) {
-                        if (i == panel.getWidth() - 1) break;
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    int stredX = jPanelDrawingArea.getWidth() / 2;
+                    int stredY = jPanelDrawingArea.getHeight() / 2;
+                    for (int i = stredX; i <= jPanelDrawingArea.getWidth(); i++) {
+                        if (i == jPanelDrawingArea.getWidth() - 1) break;
                         img.setRGB(i, stredY, currentColor.getRGB());
                     }
-                    panel.repaint();
+                    jPanelDrawingArea.repaint();
                 }
             }
         });
-        panel.addMouseListener(new  MouseAdapter() {
+        jPanelDrawingArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 img.setRGB(e.getX(), e.getY(), currentColor.getRGB());
                 System.out.println(e.getX() + " " + e.getY());
-                panel.repaint();
+                jPanelDrawingArea.repaint();
+            }
+        });
+        jPanelDrawingArea.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                mouseDraw(e.getX(), e.getY(), currentColor);
             }
         });
 
-        panel.setPreferredSize(new Dimension(width, height));
+        jPanelDrawingArea.setPreferredSize(new Dimension(width, height));
 
-        frame.add(panel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
+        this.add(jPanelDrawingArea, BorderLayout.CENTER);
+        this.pack();
+        this.setVisible(true);
     }
 
     public void clear() {
         Graphics gr = img.getGraphics();
-        gr.setColor(new Color(0x2f2f2f));
+        gr.setColor(Color.WHITE);
         gr.fillRect(0, 0, img.getWidth(), img.getHeight());
     }
 
@@ -87,9 +99,16 @@ public class Canvas {
         img.setRGB(0, 0, 0xffff00);
     }
 
+    private void mouseDraw(int x, int y, Color color) {
+        if (x >= 0 && x <= jPanelDrawingArea.getWidth() - 1 && y >= 0 && y <= jPanelDrawingArea.getHeight() - 1) {
+            img.setRGB(x, y, color.getRGB());
+            jPanelDrawingArea.repaint();
+        }
+    }
+
     public void start() {
         draw();
-        panel.repaint();
+        jPanelDrawingArea.repaint();
     }
 
     public static void main(String[] args) {
