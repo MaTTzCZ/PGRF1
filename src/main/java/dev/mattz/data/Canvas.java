@@ -7,31 +7,27 @@ import java.awt.image.BufferedImage;
 import java.io.Serial;
 
 
-public class Canvas extends JFrame {
+public class Canvas {
     private Color currentColor = Color.BLACK;
-
+    Mode currentMode = Mode.BRUSH;
+    private JFrame frame;
     private final JPanel jPanelDrawingArea;
     private final JPanel jPanelColorsPalette = new JPanel();
+    JColorChooser jColorChooser = new JColorChooser();
     private BufferedImage img;
 
     public Canvas(int width, int height) {
-        this.addComponentListener(new ComponentAdapter() {
+        frame = new JFrame("Canvas");
+        frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                System.out.println("resize");
             }
         });
-        this.setLayout(new BorderLayout());
-        this.setResizable(false);
-        this.setTitle("UHK FIM PGRF : " + this.getClass().getName());
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.add(jPanelColorsPalette,  BorderLayout.NORTH);
-
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(true);
+        frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JButton jButtonColorBlack = new JButton();
-        jButtonColorBlack.setBackground(Color.BLACK);
-        jButtonColorBlack.setBounds(0, 0, 100, 100);
-        jPanelColorsPalette.add(jButtonColorBlack);
-
 
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
@@ -45,23 +41,15 @@ public class Canvas extends JFrame {
                 present(g);
             }
         };
-        this.addKeyListener(new KeyAdapter() {
+        frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_A) {
-                    System.out.println("negr");
-                    currentColor = Color.BLUE;
-                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    int stredX = jPanelDrawingArea.getWidth() / 2;
-                    int stredY = jPanelDrawingArea.getHeight() / 2;
-                    for (int i = stredX; i <= jPanelDrawingArea.getWidth(); i++) {
-                        if (i == jPanelDrawingArea.getWidth() - 1) break;
-                        img.setRGB(i, stredY, currentColor.getRGB());
-                    }
-                    jPanelDrawingArea.repaint();
+                if (e.getKeyCode() == KeyEvent.VK_B) {
+                    currentMode = Mode.BRUSH;
                 }
             }
         });
+
         jPanelDrawingArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -73,15 +61,17 @@ public class Canvas extends JFrame {
         jPanelDrawingArea.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                mouseDraw(e.getX(), e.getY(), currentColor);
+                if (currentMode == Mode.BRUSH) mouseDraw(e.getX(), e.getY(), currentColor);
             }
         });
 
+
         jPanelDrawingArea.setPreferredSize(new Dimension(width, height));
 
-        this.add(jPanelDrawingArea, BorderLayout.CENTER);
-        this.pack();
-        this.setVisible(true);
+        frame.add(jPanelDrawingArea, BorderLayout.CENTER);
+        frame.add(jPanelColorsPalette, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     public void clear() {
@@ -101,6 +91,8 @@ public class Canvas extends JFrame {
 
     private void mouseDraw(int x, int y, Color color) {
         if (x >= 0 && x <= jPanelDrawingArea.getWidth() - 1 && y >= 0 && y <= jPanelDrawingArea.getHeight() - 1) {
+            System.out.println("frame " + frame.getWidth() + " " + frame.getHeight());
+            System.out.println("panel " + jPanelDrawingArea.getWidth() + " " + jPanelDrawingArea.getHeight());
             img.setRGB(x, y, color.getRGB());
             jPanelDrawingArea.repaint();
         }
@@ -110,9 +102,4 @@ public class Canvas extends JFrame {
         draw();
         jPanelDrawingArea.repaint();
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Canvas(800, 600).start());
-    }
-
 }
