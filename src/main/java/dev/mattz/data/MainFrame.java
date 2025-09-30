@@ -1,36 +1,53 @@
 package dev.mattz.data;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class MainFrame extends JFrame {
-    JPanel jPanelMain = new JPanel();
-    JPanel jPanelCenter = new JPanel();
+    JPanel jPanelTopMenu = new JPanel();
+    JPanel jPanelMainContent = new JPanel(new BorderLayout());
+    JPanel jPanelToolbar = new JPanel();
+    JPanel jPanelSouth = new JPanel();
+    ColorPalette colorPalettePanel = new ColorPalette();
+    Canvas canvas = new Canvas(800, 700);
+
     JMenuBar jMenuBarMain = new JMenuBar();
-    JMenuBar jMenuBarMode = new JMenuBar();
+    JMenu jMenuMainFiles = new JMenu("Files");
+    JMenuItem jMenuItem1 = new JMenuItem("test1");
+    JMenuItem jMenuItem2 = new JMenuItem("test2");
+    JMenuItem jMenuItem3 = new JMenuItem("test3");
 
-    JMenu JMenuMode = new JMenu();
-    JMenu jMenuFile = new  JMenu("File");
-    JMenuItem jMenuItem1 = new JMenuItem("Text2");
-    JMenuItem jMenuItem2 = new JMenuItem("Text2");
-    JMenuItem jMenuItem3 = new JMenuItem("Text3");
-
-    JComboBox<String> jComboBoxPixelUnits = new JComboBox<>();
 
     public MainFrame() {
-        jPanelMain.setLayout(new BorderLayout());
-        this.setSize(800, 600);
         this.setTitle("Malování");
-        this.setLayout(new BorderLayout());
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.add(jMenuBarMain, BorderLayout.NORTH);
-        this.add(jPanelCenter, BorderLayout.CENTER);
-        jMenuBarMode.add(new JButton("NEGR"));
-        jPanelCenter.add(jMenuBarMode, BorderLayout.NORTH);
+        this.setSize(800, 600);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setJMenuBar(jMenuBarMain);
+        this.add(jPanelMainContent, BorderLayout.CENTER);
+        this.add(jPanelSouth, BorderLayout.SOUTH);
 
-        jMenuBarMain.add(jMenuFile);
-        jMenuFile.add(jMenuItem1);
-        jMenuFile.add(jMenuItem2);
-        jMenuFile.add(jMenuItem3);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                canvas.setPreferredSize(new Dimension(getWidth(), getHeight()));
+                repaint();
+            }
+        });
+
+        jPanelMainContent.add(canvas);
+
+        jPanelSouth.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        jPanelSouth.add(colorPalettePanel);
+        jPanelMainContent.setBackground(Color.RED);
+
+        jMenuBarMain.add(jMenuMainFiles);
+        jMenuMainFiles.add(jMenuItem1);
+        jMenuMainFiles.add(jMenuItem2);
+        jMenuMainFiles.add(jMenuItem3);
     }
 }
