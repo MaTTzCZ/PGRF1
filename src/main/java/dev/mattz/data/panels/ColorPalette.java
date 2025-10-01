@@ -1,4 +1,4 @@
-package dev.mattz.data;
+package dev.mattz.data.panels;
 
 import javax.swing.*;
 import java.awt.*;

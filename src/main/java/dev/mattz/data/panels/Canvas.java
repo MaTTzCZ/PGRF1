@@ -1,4 +1,6 @@
-package dev.mattz.data;
+package dev.mattz.data.panels;
+
+import dev.mattz.data.Mode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,12 +8,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 
-
 public class Canvas extends JPanel {
     public static Color primaryColor = Color.BLACK;
     public static Color secundaryColor = Color.WHITE;
 
-    Mode currentMode = Mode.BRUSH;
     private final BufferedImage bufferedImage;
 
     public Canvas(int width, int height) {
@@ -20,9 +20,13 @@ public class Canvas extends JPanel {
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) mouseDraw(e.getX(), e.getY(), primaryColor);
-                else if (SwingUtilities.isRightMouseButton(e))
-                    mouseDraw(e.getX(), e.getY(), secundaryColor);
+                if (Toolbar.currentMode == Mode.PENCIL) {
+                    if (SwingUtilities.isLeftMouseButton(e)) mouseDraw(e.getX(), e.getY(), primaryColor);
+                    else if (SwingUtilities.isRightMouseButton(e)) mouseDraw(e.getX(), e.getY(), secundaryColor);
+                } else if (Toolbar.currentMode == Mode.LINE) {
+                    drawLine(e.getLocationOnScreen());
+
+                }
             }
         });
         prepareCanvas();
@@ -34,10 +38,11 @@ public class Canvas extends JPanel {
         present(g);
     }
 
-    private void prepareCanvas(){
+    private void prepareCanvas() {
         clear();
         repaint();
     }
+
     public void clear() {
         Graphics gr = bufferedImage.getGraphics();
         gr.setColor(Color.BLACK);
@@ -53,5 +58,16 @@ public class Canvas extends JPanel {
             bufferedImage.setRGB(x, y, color.getRGB());
             this.repaint();
         }
+    }
+
+    private void drawLine(int startPosX, int startPosY, int currentPosX, int currentPosY, Color color) {
+        int differenceX = Math.abs(startPosX - currentPosX);
+        int differenceY = Math.abs(startPosY - currentPosY);
+        for (int i = 0; i < differenceX; i++) {
+            mouseDraw(startPosX + i, differenceY / differenceX, primaryColor);
+        }
+        bufferedImage.
+        bufferedImage.setRGB(x, y, color.getRGB());
+        this.repaint();
     }
 }

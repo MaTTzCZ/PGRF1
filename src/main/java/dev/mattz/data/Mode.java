@@ -1,9 +1,8 @@
 package dev.mattz.data;
 
 public enum Mode {
-    NONE,
-    BRUSH,
+    SELECT,
     LINE,
-    FILL,
-    SELECT
+    PENCIL,
+    BRUSH,
 }

@@ -1,7 +1,10 @@
 package dev.mattz.data;
 
+import dev.mattz.data.panels.Canvas;
+import dev.mattz.data.panels.ColorPalette;
+import dev.mattz.data.panels.Toolbar;
+
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -12,7 +15,8 @@ public class MainFrame extends JFrame {
     JPanel jPanelToolbar = new JPanel();
     JPanel jPanelSouth = new JPanel();
     ColorPalette colorPalettePanel = new ColorPalette();
-    Canvas canvas = new Canvas(800, 700);
+    Toolbar toolbarPanel = new Toolbar();
+    dev.mattz.data.panels.Canvas canvas = new Canvas(800, 700);
 
     JMenuBar jMenuBarMain = new JMenuBar();
     JMenu jMenuMainFiles = new JMenu("Files");
@@ -43,6 +47,7 @@ public class MainFrame extends JFrame {
         jPanelSouth.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         jPanelSouth.add(colorPalettePanel);
+        jPanelSouth.add(toolbarPanel);
         jPanelMainContent.setBackground(Color.RED);
 
         jMenuBarMain.add(jMenuMainFiles);
