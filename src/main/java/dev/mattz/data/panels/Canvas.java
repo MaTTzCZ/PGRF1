@@ -4,6 +4,7 @@ import dev.mattz.data.Mode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
@@ -17,6 +18,12 @@ public class Canvas extends JPanel {
     public Canvas(int width, int height) {
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         this.setPreferredSize(new Dimension(width, height));
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                System.out.println("Mouse Pressed");
+            }
+        });
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -24,8 +31,7 @@ public class Canvas extends JPanel {
                     if (SwingUtilities.isLeftMouseButton(e)) mouseDraw(e.getX(), e.getY(), primaryColor);
                     else if (SwingUtilities.isRightMouseButton(e)) mouseDraw(e.getX(), e.getY(), secundaryColor);
                 } else if (Toolbar.currentMode == Mode.LINE) {
-                    drawLine(e.getLocationOnScreen());
-
+                    System.out.println("Mouse Dragged");
                 }
             }
         });
@@ -58,16 +64,5 @@ public class Canvas extends JPanel {
             bufferedImage.setRGB(x, y, color.getRGB());
             this.repaint();
         }
-    }
-
-    private void drawLine(int startPosX, int startPosY, int currentPosX, int currentPosY, Color color) {
-        int differenceX = Math.abs(startPosX - currentPosX);
-        int differenceY = Math.abs(startPosY - currentPosY);
-        for (int i = 0; i < differenceX; i++) {
-            mouseDraw(startPosX + i, differenceY / differenceX, primaryColor);
-        }
-        bufferedImage.
-        bufferedImage.setRGB(x, y, color.getRGB());
-        this.repaint();
     }
 }

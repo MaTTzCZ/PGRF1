@@ -10,13 +10,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class MainFrame extends JFrame {
-    JPanel jPanelTopMenu = new JPanel();
     JPanel jPanelMainContent = new JPanel(new BorderLayout());
-    JPanel jPanelToolbar = new JPanel();
-    JPanel jPanelSouth = new JPanel();
-    ColorPalette colorPalettePanel = new ColorPalette();
-    Toolbar toolbarPanel = new Toolbar();
-    dev.mattz.data.panels.Canvas canvas = new Canvas(800, 700);
+    JPanel jPanelBottom = new JPanel();
 
     JMenuBar jMenuBarMain = new JMenuBar();
     JMenu jMenuMainFiles = new JMenu("Files");
@@ -24,6 +19,9 @@ public class MainFrame extends JFrame {
     JMenuItem jMenuItem2 = new JMenuItem("test2");
     JMenuItem jMenuItem3 = new JMenuItem("test3");
 
+    Canvas canvas = new Canvas(800, 700);
+    ColorPalette colorPalette = new ColorPalette();
+    Toolbar toolbarPanel = new Toolbar();
 
     public MainFrame() {
         this.setTitle("Malování");
@@ -32,7 +30,7 @@ public class MainFrame extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setJMenuBar(jMenuBarMain);
         this.add(jPanelMainContent, BorderLayout.CENTER);
-        this.add(jPanelSouth, BorderLayout.SOUTH);
+        this.add(jPanelBottom, BorderLayout.SOUTH);
 
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -44,10 +42,10 @@ public class MainFrame extends JFrame {
 
         jPanelMainContent.add(canvas);
 
-        jPanelSouth.setLayout(new FlowLayout(FlowLayout.LEFT));
+        jPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        jPanelSouth.add(colorPalettePanel);
-        jPanelSouth.add(toolbarPanel);
+        jPanelBottom.add(colorPalette);
+        jPanelBottom.add(toolbarPanel);
         jPanelMainContent.setBackground(Color.RED);
 
         jMenuBarMain.add(jMenuMainFiles);
