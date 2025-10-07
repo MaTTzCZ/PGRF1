@@ -1,38 +1,30 @@
-package dev.mattz.data.panels;
+package dev.mattz.data.gui.views;
 
-import dev.mattz.data.Mode;
+import dev.mattz.data.gui.controllers.ToolbarController;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
-public class Toolbar extends JPanel {
-    private final ArrayList<String> toolsImagesURLs = new ArrayList<>();
-    private final List<Mode> modes;
-    protected static Mode currentMode = Mode.PENCIL;
+public class ToolbarView extends JPanel {
     private JButton currentModeButton;
 
-    public Toolbar() {
-        modes = Arrays.asList(Mode.values());
-        fillToolIcons();
-        setupToolbar();
+    private final ToolbarController controller;
+
+    public ToolbarView(ToolbarController controller) {
+        this.controller = controller;
+
+        addToolButtons();
     }
 
-    public Mode getCurrentMode() {
-        return currentMode;
-    }
-
-    private void setupToolbar() {
-        for (int i = 0; i < toolsImagesURLs.size() / 2; i++) {
+    private void addToolButtons() {
+        for (int i = 0; i < controller.getSize() / 2; i++) {
             for (int j = 0; j < 2; j++) {
                 JButton jButtonTool = new JButton();
-                jButtonTool.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(toolsImagesURLs.get(i * 2 + j)))));
+                jButtonTool.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(controller.getToolImageURL(i * 2 + j)))));
                 jButtonTool.setBounds(i * 20 + 50, j * 20, 20, 20);
                 jButtonTool.setFocusable(false);
                 jButtonTool.setBorder(null);
@@ -48,8 +40,8 @@ public class Toolbar extends JPanel {
                     public void mousePressed(MouseEvent e) {
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             if (jButtonTool != currentModeButton) {
-                                currentMode = modes.get(finalI * 2 + finalJ);
-                                System.out.println(currentMode);
+                                controller.setCurrentMode(finalI * 2 + finalJ);
+                                System.out.println(controller.getCurrentMode());
                                 jButtonTool.setBorder(new LineBorder(Color.BLUE, 3));
                                 currentModeButton.setBorder(null);
                                 currentModeButton = jButtonTool;
@@ -61,13 +53,4 @@ public class Toolbar extends JPanel {
             }
         }
     }
-
-    private void fillToolIcons() {
-        toolsImagesURLs.add("/images/select_tool_icon.png");
-        toolsImagesURLs.add("/images/lines_tool_icon.png");
-        toolsImagesURLs.add("/images/pencil_tool_icon.png");
-        toolsImagesURLs.add("/images/brush_tool_icon.png");
-
-    }
-
 }

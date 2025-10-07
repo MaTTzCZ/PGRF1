@@ -1,15 +1,14 @@
-package dev.mattz.data;
+package dev.mattz.data.gui.views;
 
-import dev.mattz.data.panels.Canvas;
-import dev.mattz.data.panels.ColorPalette;
-import dev.mattz.data.panels.Toolbar;
+import dev.mattz.data.gui.controllers.MainController;
+import dev.mattz.data.graphics.Canvas;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class MainFrame extends JFrame {
+public class MainView extends JFrame {
     JPanel jPanelMainContent = new JPanel(new BorderLayout());
     JPanel jPanelBottom = new JPanel();
 
@@ -19,11 +18,15 @@ public class MainFrame extends JFrame {
     JMenuItem jMenuItem2 = new JMenuItem("test2");
     JMenuItem jMenuItem3 = new JMenuItem("test3");
 
-    Canvas canvas = new Canvas(800, 700);
-    ColorPalette colorPalette = new ColorPalette();
-    Toolbar toolbarPanel = new Toolbar();
+    MainController mainController = new MainController();
 
-    public MainFrame() {
+    ColorPaletteView colorPalette = new ColorPaletteView(mainController.getColorPaletteController());
+    ToolbarView toolbar = new ToolbarView(mainController.getToolbarController());
+    Canvas canvas = new Canvas(800, 700, mainController.getColorPaletteController(), mainController.getToolbarController());
+
+
+
+    public MainView() {
         this.setTitle("Malování");
         this.setSize(800, 600);
         this.setLocationRelativeTo(null);
@@ -45,7 +48,7 @@ public class MainFrame extends JFrame {
         jPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         jPanelBottom.add(colorPalette);
-        jPanelBottom.add(toolbarPanel);
+        jPanelBottom.add(toolbar);
         jPanelMainContent.setBackground(Color.RED);
 
         jMenuBarMain.add(jMenuMainFiles);
