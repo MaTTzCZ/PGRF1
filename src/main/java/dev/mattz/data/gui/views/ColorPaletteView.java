@@ -1,20 +1,20 @@
 package dev.mattz.data.gui.views;
 
-import dev.mattz.data.gui.controllers.ColorPaletteController;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.List;
 
 public class ColorPaletteView extends JPanel {
     JButton jButtonPrimaryColor = new JButton();
     JButton jButtonSecondaryColor = new JButton();
 
-    private final ColorPaletteController controller;
+    JButton newButton = new JButton();
 
-    public ColorPaletteView(ColorPaletteController controller) {
-        this.controller = controller;
+
+    public ColorPaletteView() {
 
         this.setPreferredSize(new Dimension(330, 40));
         this.setLayout(null);
@@ -28,24 +28,22 @@ public class ColorPaletteView extends JPanel {
         jButtonSecondaryColor.setBackground(Color.WHITE);
         jButtonSecondaryColor.setBounds(20, 15, 20, 20);
         jButtonSecondaryColor.setEnabled(false);
-
-        addButtons();
     }
 
-    private void addButtons() {
-        for (int i = 0; i < controller.getSize() / 2; i++) {
+    public void createButtons(List<Color> colors) {
+        for (int i = 0; i < colors.size() / 2; i++) {
             for (int j = 0; j < 2; j++) {
-                JButton jButtonColor = new JButton();
-                jButtonColor.setBackground(controller.getColor(i * 2 + j));
-                jButtonColor.setBounds(i * 20 + 50, j * 20, 20, 20);
+                newButton = new JButton();
+                newButton.setBackground(colors.get(i * 2 + j));
+                newButton.setBounds(i * 20 + 50, j * 20, 20, 20);
                 int finalI = i;
                 int finalJ = j;
-                jButtonColor.addMouseListener(new MouseAdapter() {
+                newButton.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
+                        int index = finalI * 2 + finalJ;
                         if (SwingUtilities.isLeftMouseButton(e)) {
-                            controller.setPrimaryColor(finalI * 2 + finalJ);
-                            jButtonPrimaryColor.setBackground(controller.getPrimaryColor());
+                            jButtonPrimaryColor.setBackground(colors.get());
                         }
                         else if (SwingUtilities.isRightMouseButton(e)) {
                             controller.setSecondaryColor(finalI * 2 + finalJ);
@@ -53,10 +51,11 @@ public class ColorPaletteView extends JPanel {
                         }
                     }
                 });
-                this.add(jButtonColor);
+                this.add(newButton);
             }
         }
     }
-
-
+    public void addListener(MouseListener listener){
+        newButton.addMouseListener(listener);
+    }
 }

@@ -1,6 +1,5 @@
 package dev.mattz.data.gui.views;
 
-import dev.mattz.data.gui.controllers.MainController;
 import dev.mattz.data.graphics.Canvas;
 
 import javax.swing.*;

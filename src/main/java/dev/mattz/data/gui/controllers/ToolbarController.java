@@ -1,50 +1,61 @@
 package dev.mattz.data.gui.controllers;
 
-import dev.mattz.data.Mode;
+import dev.mattz.data.gui.models.ToolbarModel;
+import dev.mattz.data.gui.views.ToolbarView;
 
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ToolbarController {
-    private final ArrayList<String> toolsImagesURLs;
+    private final ToolbarModel model;
+    private final ToolbarView view;
 
-    private Mode[] availableModes;
-    private Mode currentMode;
+    JButton currentButton;
 
-    public ToolbarController() {
-        this.toolsImagesURLs = new ArrayList<>();
+    public ToolbarController(ToolbarView view) {
+        this.model = new ToolbarModel();
+        this.view = view;
 
-        getAllModes();
-        addToolsImagesURLs();
+        loadImageIcons();
+
     }
 
-    public Mode getCurrentMode() {
-        return this.currentMode;
+    private void createButtons() {
+        for (int index = 0; index < availableModes.length; index++) {
+            view.add(createButton(index));
+        }
     }
 
-    public void setCurrentMode(int index) {
-        this.currentMode = availableModes[index];
+    private JButton createButton(int index) {
+        JButton button = new JButton();
+        button.setBounds(index * 40, 0, 40, 40);
+        button.setIcon(toolbarImageIcons.get(index));
+        button.setFocusable(false);
+        button.setBorder(null);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                button.setBorder(new LineBorder(Color.BLUE, 3));
+                model.setCurrentMode(index);
+            }
+        });
+        if (currentButton != null) {
+            button.setBorder(new LineBorder(Color.BLUE, 3));
+            this.currentButton = button;
+        }
+        return button;
     }
 
-    public int getSize() {
-        return toolsImagesURLs.size();
-    }
-
-    public String getToolImageURL(int index){
-        return toolsImagesURLs.get(index);
-    }
-
-    public Mode getMode(int index) {
-        return availableModes[index];
-    }
-
-    private void getAllModes(){
-        availableModes = Mode.values();
-    }
-
-    private void addToolsImagesURLs() {
-        toolsImagesURLs.add("/images/select_tool_icon.png");
-        toolsImagesURLs.add("/images/lines_tool_icon.png");
-        toolsImagesURLs.add("/images/pencil_tool_icon.png");
-        toolsImagesURLs.add("/images/brush_tool_icon.png");
+    private void loadImageIcons() {
+        toolbarImageIcons = new ArrayList<>();
+        for (String URL : model.getToolbarIcons()) {
+            assert toolbarImageIcons != null;
+            toolbarImageIcons.add(new ImageIcon(Objects.requireNonNull(getClass().getResource(URL))));
+        }
     }
 }

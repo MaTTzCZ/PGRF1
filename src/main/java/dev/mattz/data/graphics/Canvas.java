@@ -1,8 +1,6 @@
 package dev.mattz.data.graphics;
 
 import dev.mattz.data.Mode;
-import dev.mattz.data.gui.controllers.CanvasController;
-import dev.mattz.data.gui.controllers.ColorPaletteController;
 import dev.mattz.data.gui.controllers.ToolbarController;
 
 import javax.swing.*;
