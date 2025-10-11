@@ -1,12 +1,14 @@
 package dev.mattz.data.graphics.drawable_objects;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Polygon {
-    private ArrayList<Point2D> points;
+public class Polygon implements Drawable {
+    private LinkedList<Point2D> points;
 
     public Polygon() {
-        points = new ArrayList<>();
+        points = new LinkedList<>();
     }
 
     public void addPoint(Point2D point) {
@@ -28,5 +30,10 @@ public class Polygon {
 
     public void clear() {
         points.clear();
+    }
+
+    @Override
+    public List<Point2D> getAllPoints() {
+        return points;
     }
 }

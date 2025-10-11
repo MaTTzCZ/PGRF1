@@ -1,6 +1,8 @@
 package dev.mattz.data.gui.views;
 
-import dev.mattz.data.graphics.Canvas;
+import dev.mattz.data.gui.controllers.CanvasController;
+import dev.mattz.data.gui.controllers.ColorPaletteController;
+import dev.mattz.data.gui.controllers.ToolbarController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,20 +14,18 @@ public class MainView extends JFrame {
     JPanel jPanelBottom = new JPanel();
 
     JMenuBar jMenuBarMain = new JMenuBar();
-    JMenu jMenuMainFiles = new JMenu("Files");
-    JMenuItem jMenuItem1 = new JMenuItem("test1");
-    JMenuItem jMenuItem2 = new JMenuItem("test2");
-    JMenuItem jMenuItem3 = new JMenuItem("test3");
+    JMenu jMenuMainFiles = new JMenu("Canvas");
+    JMenuItem jMenuItem1 = new JMenuItem("Clear");
 
-    MainController mainController = new MainController();
-
-    ColorPaletteView colorPalette = new ColorPaletteView(mainController.getColorPaletteController());
-    ToolbarView toolbar = new ToolbarView(mainController.getToolbarController());
-    Canvas canvas = new Canvas(800, 700, mainController.getColorPaletteController(), mainController.getToolbarController());
-
-
+    ColorPaletteView colorPaletteView = new ColorPaletteView();
+    ToolbarView toolbarView = new ToolbarView();
+    CanvasView canvasView = new CanvasView(800, 700);
 
     public MainView() {
+        new CanvasController(canvasView);
+        new ColorPaletteController(colorPaletteView);
+        new ToolbarController(toolbarView);
+
         this.setTitle("Malování");
         this.setSize(800, 600);
         this.setLocationRelativeTo(null);
@@ -37,22 +37,22 @@ public class MainView extends JFrame {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                canvas.setPreferredSize(new Dimension(getWidth(), getHeight()));
+                canvasView.setPreferredSize(new Dimension(getWidth(), getHeight()));
                 repaint();
             }
         });
 
-        jPanelMainContent.add(canvas);
+        jPanelMainContent.add(canvasView);
 
         jPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        jPanelBottom.add(colorPalette);
-        jPanelBottom.add(toolbar);
+        jPanelBottom.add(colorPaletteView);
+        jPanelBottom.add(toolbarView);
         jPanelMainContent.setBackground(Color.RED);
 
         jMenuBarMain.add(jMenuMainFiles);
         jMenuMainFiles.add(jMenuItem1);
-        jMenuMainFiles.add(jMenuItem2);
-        jMenuMainFiles.add(jMenuItem3);
+
+        jMenuItem1.addActionListener(_ -> canvasView.clear());
     }
 }

@@ -1,6 +1,8 @@
 package dev.mattz.data.graphics.drawable_objects;
 
-public class Point2D {
+import java.util.List;
+
+public class Point2D implements Drawable {
     private int x;
     private int y;
 
@@ -23,5 +25,10 @@ public class Point2D {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    public List<Point2D> getAllPoints() {
+        return List.of(this);
     }
 }

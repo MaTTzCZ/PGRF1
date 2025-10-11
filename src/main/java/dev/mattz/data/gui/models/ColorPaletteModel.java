@@ -4,12 +4,14 @@ import java.awt.*;
 import java.util.List;
 
 public class ColorPaletteModel {
+    private static ColorPaletteModel model;
+
     private final List<Color> colors;
 
     private Color primaryColor;
     private Color secondaryColor;
 
-    public ColorPaletteModel() {
+    private ColorPaletteModel() {
         this.primaryColor = Color.BLACK;
         this.secondaryColor = Color.WHITE;
 
@@ -43,6 +45,13 @@ public class ColorPaletteModel {
                 new Color(131, 64, 0),
                 new Color(251, 129, 68)
         );
+    }
+
+    public static ColorPaletteModel getInstance(){
+        if (model == null){
+            model = new ColorPaletteModel();
+        }
+        return model;
     }
 
     public List<Color> getColors() {
