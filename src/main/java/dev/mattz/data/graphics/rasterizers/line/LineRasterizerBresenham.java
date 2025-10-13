@@ -1,5 +1,7 @@
-package dev.mattz.data.graphics.rasterizers;
 
+package dev.mattz.data.graphics.rasterizers.line;
+
+import dev.mattz.data.graphics.drawable_objects.Line;
 import dev.mattz.data.graphics.drawable_objects.Point2D;
 
 import java.awt.*;
@@ -7,16 +9,10 @@ import java.awt.image.BufferedImage;
 
 public class LineRasterizerBresenham implements LineRasterizer {
     public LineRasterizerBresenham() {
-
     }
 
     @Override
-    public void draw(Point2D start, Point2D end, Color color1, Color color2, BufferedImage bufferedImage) {
-        int x1 = start.getX();
-        int y1 = start.getY();
-        int x2 = end.getX();
-        int y2 = end.getY();
-
+    public void draw(int x1, int y1, int x2, int y2, Color color, BufferedImage bufferedImage) {
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
 
@@ -24,16 +20,9 @@ public class LineRasterizerBresenham implements LineRasterizer {
         int sy = y1 < y2 ? 1 : -1;
 
         int err = dx - dy;
-
-        int steps = Math.max(dx, dy);
-        int step = 0;
-
         while (true) {
-            float t = steps == 0 ? 0f : (float) step / steps;
-            Color c = interpolateColor(color1, color2, t);
-
             if (x1 >= 0 && x1 < bufferedImage.getWidth() && y1 >= 0 && y1 < bufferedImage.getHeight()) {
-                bufferedImage.setRGB(x1, y1, c.getRGB());
+                bufferedImage.setRGB(x1, y1, color.getRGB());
             }
 
             if (x1 == x2 && y1 == y2)
@@ -48,8 +37,17 @@ public class LineRasterizerBresenham implements LineRasterizer {
                 err += dx;
                 y1 += sy;
             }
-
-            step++;
         }
     }
+
+    @Override
+    public void draw(Point2D start, Point2D end, Color color, BufferedImage bufferedImage) {
+        draw(start.getX(), start.getY(), end.getX(), end.getY(), color, bufferedImage);
+    }
+
+    @Override
+    public void draw(Line line, BufferedImage bufferedImage) {
+        draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), bufferedImage);
+    }
 }
+

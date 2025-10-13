@@ -1,5 +1,6 @@
-package dev.mattz.data.graphics.rasterizers;
+package dev.mattz.data.graphics.rasterizers.line;
 
+import dev.mattz.data.graphics.drawable_objects.Line;
 import dev.mattz.data.graphics.drawable_objects.Point2D;
 
 import java.awt.*;
@@ -10,19 +11,14 @@ public class LineRasterizerDDA implements LineRasterizer {
     }
 
     @Override
-    public void draw(Point2D start, Point2D end, Color color1, Color color2, BufferedImage bufferedImage) {
-        int x1 = start.getX();
-        int y1 = start.getY();
-        int x2 = end.getX();
-        int y2 = end.getY();
-
+    public void draw(int x1, int y1, int x2, int y2, Color color, BufferedImage bufferedImage) {
         int dx = x2 - x1;
         int dy = y2 - y1;
 
         int steps = Math.max(Math.abs(dx), Math.abs(dy));
 
         if (steps == 0) {
-            bufferedImage.setRGB(x1, y1, color1.getRGB());
+            bufferedImage.setRGB(x1, y1, color.getRGB());
             return;
         }
 
@@ -33,18 +29,26 @@ public class LineRasterizerDDA implements LineRasterizer {
         float y = y1;
 
         for (int i = 0; i <= steps; i++) {
-            float t = (float) i / steps;
-            Color c = interpolateColor(color1, color2, t);
 
             int xi = Math.round(x);
             int yi = Math.round(y);
 
             if (xi >= 0 && xi < bufferedImage.getWidth() && yi >= 0 && yi < bufferedImage.getHeight()) {
-                bufferedImage.setRGB(xi, yi, c.getRGB());
+                bufferedImage.setRGB(xi, yi, color.getRGB());
             }
 
             x += xIncrement;
             y += yIncrement;
         }
+    }
+
+    @Override
+    public void draw(Point2D start, Point2D end, Color color, BufferedImage bufferedImage) {
+        draw(start.getX(), start.getY(), end.getX(), start.getY(), color, bufferedImage);
+    }
+
+    @Override
+    public void draw(Line line, BufferedImage bufferedImage) {
+        draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), bufferedImage);
     }
 }

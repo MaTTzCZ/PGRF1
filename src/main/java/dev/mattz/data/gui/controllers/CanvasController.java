@@ -1,7 +1,7 @@
 package dev.mattz.data.gui.controllers;
 
 import dev.mattz.data.Mode;
-import dev.mattz.data.graphics.RasterizedBufferImage;
+import dev.mattz.data.graphics.RasterImage;
 import dev.mattz.data.graphics.drawable_objects.Point2D;
 import dev.mattz.data.gui.models.ColorPaletteModel;
 import dev.mattz.data.gui.models.ToolbarModel;
@@ -14,7 +14,7 @@ public class CanvasController {
     private final CanvasView view;
     private final ColorPaletteModel colorPaletteModel;
     private final ToolbarModel toolbarModel;
-    private final RasterizedBufferImage rasterizedBufferImage;
+    private final RasterImage rasterImage;
 
     private Point2D startPoint, currentPoint, newPoint;
 
@@ -24,7 +24,7 @@ public class CanvasController {
 
         this.colorPaletteModel = ColorPaletteModel.getInstance();
         this.toolbarModel = ToolbarModel.getInstance();
-        this.rasterizedBufferImage = new RasterizedBufferImage(view.getRasterizedBufferImage());
+        this.rasterImage = new RasterImage(view.getRasterizedBufferImage());
 
         view.addMouseListener(new MouseAdapter() {
             @Override
@@ -84,9 +84,9 @@ public class CanvasController {
                 view.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor());
         } else {
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterizedBufferImage.lineMode(startPoint, currentPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
+                rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterizedBufferImage.lineMode(startPoint, currentPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
+                rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
             startPoint = currentPoint = null;
             view.clearTemporaryLine();
         }
@@ -96,16 +96,16 @@ public class CanvasController {
         if (Math.abs(newPoint.getX() - startPoint.getX()) <= 5 && Math.abs(newPoint.getY() - startPoint.getY()) <= 5) {
             newPoint = startPoint;
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterizedBufferImage.lineMode(currentPoint, startPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
+                rasterImage.lineMode(currentPoint, startPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterizedBufferImage.lineMode(currentPoint, startPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
+                rasterImage.lineMode(currentPoint, startPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
             view.clearPolygonStart();
             startPoint = currentPoint = newPoint = null;
         } else {
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterizedBufferImage.lineMode(currentPoint, newPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
+                rasterImage.lineMode(currentPoint, newPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterizedBufferImage.lineMode(currentPoint, newPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
+                rasterImage.lineMode(currentPoint, newPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
             currentPoint = newPoint;
             view.repaint();
         }
@@ -113,9 +113,9 @@ public class CanvasController {
 
     private void pencilMode(MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event))
-            rasterizedBufferImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getPrimaryColor());
+            rasterImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getPrimaryColor());
         else if (SwingUtilities.isRightMouseButton(event))
-            rasterizedBufferImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getSecondaryColor());
+            rasterImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getSecondaryColor());
         view.repaint();
     }
 
