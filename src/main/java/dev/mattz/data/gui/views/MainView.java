@@ -14,15 +14,18 @@ public class MainView extends JFrame {
     JPanel jPanelBottom = new JPanel();
 
     JMenuBar jMenuBarMain = new JMenuBar();
-    JMenu jMenuMainFiles = new JMenu("Canvas");
-    JMenuItem jMenuItem1 = new JMenuItem("Clear");
+    JMenu jMenuCanvas = new JMenu("Canvas");
+    JMenu jMenuToolbar = new JMenu("Toolbar");
+
+    JMenuItem jMenuCanvasItem1 = new JMenuItem("Clear");
+    JCheckBoxMenuItem jMenuToolbarItem1 = new JCheckBoxMenuItem("Line Gradient");
 
     ColorPaletteView colorPaletteView = new ColorPaletteView();
     ToolbarView toolbarView = new ToolbarView();
     CanvasView canvasView = new CanvasView(800, 700);
 
     public MainView() {
-        new CanvasController(canvasView);
+        new CanvasController(canvasView, this);
         new ColorPaletteController(colorPaletteView);
         new ToolbarController(toolbarView);
 
@@ -50,9 +53,17 @@ public class MainView extends JFrame {
         jPanelBottom.add(toolbarView);
         jPanelMainContent.setBackground(Color.RED);
 
-        jMenuBarMain.add(jMenuMainFiles);
-        jMenuMainFiles.add(jMenuItem1);
+        jMenuBarMain.add(jMenuCanvas);
+        jMenuBarMain.add(jMenuToolbar);
 
-        jMenuItem1.addActionListener(_ -> canvasView.clear());
+        jMenuCanvas.add(jMenuCanvasItem1);
+
+        jMenuToolbar.add(jMenuToolbarItem1);
+
+        jMenuCanvasItem1.addActionListener(_ -> canvasView.clear());
+    }
+
+    public boolean isGradientLineSelected(){
+        return jMenuToolbarItem1.isSelected();
     }
 }

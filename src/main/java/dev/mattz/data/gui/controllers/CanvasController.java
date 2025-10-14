@@ -6,27 +6,30 @@ import dev.mattz.data.graphics.drawable_objects.Point2D;
 import dev.mattz.data.gui.models.ColorPaletteModel;
 import dev.mattz.data.gui.models.ToolbarModel;
 import dev.mattz.data.gui.views.CanvasView;
+import dev.mattz.data.gui.views.MainView;
 
 import javax.swing.*;
 import java.awt.event.*;
 
 public class CanvasController {
-    private final CanvasView view;
+    private final MainView mainView;
+    private final CanvasView canvasView;
     private final ColorPaletteModel colorPaletteModel;
     private final ToolbarModel toolbarModel;
     private final RasterImage rasterImage;
 
     private Point2D startPoint, currentPoint, newPoint;
 
-    public CanvasController(CanvasView view) {
-        this.view = view;
-        view.setFocusable(true);
+    public CanvasController(CanvasView canvasView, MainView mainView) {
+        this.canvasView = canvasView;
+        this.mainView = mainView;
+        canvasView.setFocusable(true);
 
         this.colorPaletteModel = ColorPaletteModel.getInstance();
         this.toolbarModel = ToolbarModel.getInstance();
-        this.rasterImage = new RasterImage(view.getRasterizedBufferImage());
+        this.rasterImage = new RasterImage(canvasView.getRasterizedBufferImage());
 
-        view.addMouseListener(new MouseAdapter() {
+        canvasView.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
@@ -34,7 +37,7 @@ public class CanvasController {
                     case POLYGON -> {
                         if (startPoint == null) {
                             startPoint = currentPoint = new Point2D(e.getX(), e.getY());
-                            view.setPolygonStart(startPoint);
+                            canvasView.setPolygonStart(startPoint);
                         } else {
                             newPoint = new Point2D(e.getX(), e.getY());
                             polygonMode(e);
@@ -54,7 +57,7 @@ public class CanvasController {
             }
         });
 
-        view.addMouseMotionListener(new MouseMotionAdapter() {
+        canvasView.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
@@ -64,11 +67,11 @@ public class CanvasController {
             }
         });
 
-        view.addKeyListener(new KeyAdapter() {
+        canvasView.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
-                    view.clear();
+                    canvasView.clear();
                 }
             }
         });
@@ -79,35 +82,40 @@ public class CanvasController {
             Point2D newPoint = new Point2D(event.getX(), event.getY());
             if (event.isShiftDown()) newPoint = snapToFixedAngle(startPoint, new Point2D(event.getX(), event.getY()));
             if (SwingUtilities.isLeftMouseButton(event))
-                view.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor());
+                canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                view.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor());
+                canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor());
         } else {
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
+                if (mainView.isGradientLineSelected())
+                    rasterImage.gradientLineMode(startPoint, currentPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
+                else rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
+                if (mainView.isGradientLineSelected())
+                    rasterImage.gradientLineMode(startPoint, currentPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
+                else rasterImage.lineMode(startPoint, currentPoint, colorPaletteModel.getSecondaryColor());
             startPoint = currentPoint = null;
-            view.clearTemporaryLine();
+            canvasView.clearTemporaryLine();
         }
     }
+
 
     private void polygonMode(MouseEvent event) {
         if (Math.abs(newPoint.getX() - startPoint.getX()) <= 5 && Math.abs(newPoint.getY() - startPoint.getY()) <= 5) {
             newPoint = startPoint;
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterImage.lineMode(currentPoint, startPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
+                rasterImage.polygonMode(currentPoint, startPoint, colorPaletteModel.getPrimaryColor(), true);
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterImage.lineMode(currentPoint, startPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
-            view.clearPolygonStart();
+                rasterImage.polygonMode(currentPoint, startPoint, colorPaletteModel.getSecondaryColor(), true);
+            canvasView.clearPolygonStart();
             startPoint = currentPoint = newPoint = null;
         } else {
             if (SwingUtilities.isLeftMouseButton(event))
-                rasterImage.lineMode(currentPoint, newPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getPrimaryColor());
+                rasterImage.polygonMode(currentPoint, newPoint, colorPaletteModel.getPrimaryColor(), false);
             else if (SwingUtilities.isRightMouseButton(event))
-                rasterImage.lineMode(currentPoint, newPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getSecondaryColor());
+                rasterImage.polygonMode(currentPoint, newPoint, colorPaletteModel.getSecondaryColor(), false);
             currentPoint = newPoint;
-            view.repaint();
+            canvasView.repaint();
         }
     }
 
@@ -116,7 +124,7 @@ public class CanvasController {
             rasterImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getPrimaryColor());
         else if (SwingUtilities.isRightMouseButton(event))
             rasterImage.pencilMode(new Point2D(event.getX(), event.getY()), colorPaletteModel.getSecondaryColor());
-        view.repaint();
+        canvasView.repaint();
     }
 
     private Point2D snapToFixedAngle(Point2D start, Point2D current) {
