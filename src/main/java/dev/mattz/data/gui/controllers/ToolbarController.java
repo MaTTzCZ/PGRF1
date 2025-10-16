@@ -6,11 +6,9 @@ import dev.mattz.data.gui.views.ToolbarView;
 
 public class ToolbarController {
     private final ToolbarModel model;
-    private final ToolbarView view;
 
     public ToolbarController(ToolbarView view) {
         this.model = ToolbarModel.getInstance();
-        this.view = view;
 
         view.setJButtonSelectModeListener(_ -> model.setCurrentMode(Mode.SELECT));
         view.setJButtonLineModeListener(_ -> model.setCurrentMode(Mode.LINE));

@@ -1,22 +1,20 @@
 package dev.mattz.data.graphics.drawable_objects;
 
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Polygon implements Drawable {
-    private LinkedList<Point2D> points;
+    private final LinkedList<Point2D> points;
+    private final Color color;
 
-    public Polygon() {
+    public Polygon(Color color) {
         points = new LinkedList<>();
+        this.color = color;
     }
 
     public void addPoint(Point2D point) {
         points.add(point);
-    }
-
-    public void addPoint(int index, Point2D point) {
-        points.add(index, point);
     }
 
 
@@ -28,12 +26,12 @@ public class Polygon implements Drawable {
         return points.size();
     }
 
-    public void clear() {
-        points.clear();
-    }
-
     @Override
     public List<Point2D> getAllPoints() {
         return points;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

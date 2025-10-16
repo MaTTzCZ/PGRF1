@@ -1,10 +1,5 @@
 package dev.mattz.data.graphics.rasterizers.gradient_line;
 
-import dev.mattz.data.graphics.drawable_objects.GradientLine;
-import dev.mattz.data.graphics.drawable_objects.Line;
-import dev.mattz.data.graphics.drawable_objects.Point2D;
-import dev.mattz.data.graphics.rasterizers.line.LineRasterizer;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -44,15 +39,5 @@ public class GradientLineRasterizerDDA implements GradientLineRasterizer {
             x += xIncrement;
             y += yIncrement;
         }
-    }
-
-    @Override
-    public void draw(Point2D start, Point2D end, Color color1, Color color2, BufferedImage bufferedImage) {
-        draw(start.getX(), start.getY(), end.getX(), end.getY(), color1, color2, bufferedImage);
-    }
-
-    @Override
-    public void draw(GradientLine line, BufferedImage bufferedImage) {
-        draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), line.getColor2(), bufferedImage);
     }
 }

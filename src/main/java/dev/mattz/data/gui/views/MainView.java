@@ -60,7 +60,7 @@ public class MainView extends JFrame {
 
         jMenuToolbar.add(jMenuToolbarItem1);
 
-        jMenuCanvasItem1.addActionListener(_ -> canvasView.clear());
+        jMenuCanvasItem1.addActionListener(_ -> canvasView.clearBufferedImage());
     }
 
     public boolean isGradientLineSelected(){
