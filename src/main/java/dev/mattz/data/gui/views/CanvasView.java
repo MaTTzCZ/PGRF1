@@ -78,6 +78,11 @@ public class CanvasView extends JPanel {
         repaint();
     }
 
+    public void clearDrawables() {
+        drawables.clear();
+        repaint();
+    }
+
     public void clearBufferedImage() {
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(Color.BLACK);
@@ -109,7 +114,7 @@ public class CanvasView extends JPanel {
     }
 
     public void setRGB(int x, int y, Color color) {
-        bufferedImage.setRGB(x, y, color.getRGB());
+        pencilRasterizer.draw(x, y, color, bufferedImage);
         repaint();
     }
 }

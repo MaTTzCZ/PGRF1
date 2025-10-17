@@ -82,6 +82,7 @@ public class CanvasController {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
+                    canvasView.clearDrawables();
                     canvasView.clearBufferedImage();
                 }
             }
