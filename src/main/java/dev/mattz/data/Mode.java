@@ -1,7 +1,7 @@
 package dev.mattz.data;
 
 public enum Mode {
-    SELECT,
+    MOVE,
     LINE,
     POLYGON,
     PENCIL,

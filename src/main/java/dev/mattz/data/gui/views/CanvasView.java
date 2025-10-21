@@ -47,9 +47,8 @@ public class CanvasView extends JPanel {
 
         //Polygon start point
         if (polygonStart != null) {
-            graphics.setColor(Color.RED);
-            int radius = 5;
-            g2d.fillOval(polygonStart.x() - radius, polygonStart.y() - radius, radius * 2, radius * 2);
+            drawCircle(polygonStart.getX(), polygonStart.getY());
+            repaint();
         }
         g2d.dispose();
     }
@@ -67,6 +66,15 @@ public class CanvasView extends JPanel {
                 pencilRasterizer.draw(drawable, bufferedImage);
             }
         }
+        repaint();
+    }
+
+    public void drawCircle(int x, int y){
+        Graphics2D graphics = bufferedImage.createGraphics();
+        graphics.setColor(Color.RED);
+        int radius = 5;
+        graphics.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+        graphics.dispose();
     }
 
     public void drawPolygonLine(Point2D start, Point2D end, Color color) {
@@ -75,7 +83,7 @@ public class CanvasView extends JPanel {
 
     public void addDrawable(Drawable drawable) {
         drawables.add(drawable);
-        repaint();
+        drawAll();
     }
 
     public void clearDrawables() {

@@ -8,10 +8,10 @@ public class Line implements Drawable {
     private final Color color;
 
     public Line(Point2D start, Point2D end, Color color) {
-        this.x1 = start.x();
-        this.y1 = start.y();
-        this.x2 = end.x();
-        this.y2 = end.y();
+        this.x1 = start.getX();
+        this.y1 = start.getY();
+        this.x2 = end.getX();
+        this.y2 = end.getY();
         this.color = color;
     }
 

@@ -17,7 +17,7 @@ public interface LineRasterizer extends Rasterizer {
     }
 
     default void draw(Point2D start, Point2D end, Color color, BufferedImage bufferedImage) {
-        draw(start.x(), start.y(), end.x(), end.y(), color, bufferedImage);
+        draw(start.getX(), start.getY(), end.getX(), end.getY(), color, bufferedImage);
     }
 
     default void draw(Line line, BufferedImage bufferedImage) {

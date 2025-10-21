@@ -9,14 +9,15 @@ import java.awt.image.BufferedImage;
 
 public class PencilRasterizer implements Rasterizer {
     public void draw(int x, int y, Color color, BufferedImage image) {
-        if (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight()) image.setRGB(x, y, color.getRGB());
+        if (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight())
+            image.setRGB(x, y, color.getRGB());
     }
 
     @Override
     public void draw(Drawable drawable, BufferedImage bufferedImage) {
         PencilStroke pencilStroke = (PencilStroke) drawable;
         for(Point2D point : pencilStroke.getAllPoints()){
-            draw(point.x(), point.y(), pencilStroke.getColor(), bufferedImage);
+            draw(point.getX(), point.getY(), pencilStroke.getColor(), bufferedImage);
         }
     }
 }

@@ -4,15 +4,16 @@ import dev.mattz.data.Mode;
 
 public class ToolbarModel {
     private static ToolbarModel model;
-
     private Mode currentMode;
+    private boolean isLocked;
 
     private ToolbarModel() {
-        this.currentMode = Mode.SELECT;
+        this.currentMode = Mode.MOVE;
+        this.isLocked = false;
     }
 
-    public static ToolbarModel getInstance(){
-        if (model == null){
+    public static ToolbarModel getInstance() {
+        if (model == null) {
             model = new ToolbarModel();
         }
         return model;
@@ -23,6 +24,15 @@ public class ToolbarModel {
     }
 
     public void setCurrentMode(Mode mode) {
-        this.currentMode = mode;
+        if (!isLocked)
+            this.currentMode = mode;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
     }
 }

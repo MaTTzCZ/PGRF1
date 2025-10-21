@@ -17,7 +17,7 @@ public interface GradientLineRasterizer extends Rasterizer {
     }
 
     default void draw(Point2D start, Point2D end, Color color1, Color color2, BufferedImage bufferedImage) {
-        draw(start.x(), start.y(), end.x(), end.y(), color1, color2, bufferedImage);
+        draw(start.getX(), start.getY(), end.getX(), end.getY(), color1, color2, bufferedImage);
     }
 
     default void draw(GradientLine line, BufferedImage bufferedImage) {

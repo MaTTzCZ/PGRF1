@@ -1,5 +1,6 @@
 package dev.mattz.data.gui.controllers;
 
+import dev.mattz.data.Mode;
 import dev.mattz.data.graphics.drawable_objects.*;
 import dev.mattz.data.gui.models.ColorPaletteModel;
 import dev.mattz.data.gui.models.ToolbarModel;
@@ -31,9 +32,14 @@ public class CanvasController {
             @Override
             public void mousePressed(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
-                    case LINE -> startPoint = new Point2D(e.getX(), e.getY());
+                    case LINE -> {
+                        canvasView.setCurrentMode(Mode.LINE);
+                        startPoint = new Point2D(e.getX(), e.getY());
+                    }
                     case POLYGON -> {
+                        canvasView.setCurrentMode(Mode.POLYGON);
                         if (SwingUtilities.isLeftMouseButton(e)) {
+                            toolbarModel.setLocked(true);
                             if (startPoint == null) {
                                 polygon = new Polygon(colorPaletteModel.getPrimaryColor());
                                 startPoint = currentPoint = new Point2D(e.getX(), e.getY());
@@ -45,7 +51,10 @@ public class CanvasController {
                             }
                         }
                     }
-                    case PENCIL -> pencilMode(e);
+                    case PENCIL -> {
+                        canvasView.setCurrentMode(Mode.PENCIL);
+                        pencilMode(e);
+                    }
 
                 }
             }
@@ -115,7 +124,7 @@ public class CanvasController {
     }
 
     private void polygonMode(MouseEvent event) {
-        if (Math.abs(newPoint.x() - startPoint.x()) <= 5 && Math.abs(newPoint.y() - startPoint.y()) <= 5) {
+        if (Math.abs(newPoint.getX() - startPoint.getX()) <= 5 && Math.abs(newPoint.getY() - startPoint.getY()) <= 5) {
             newPoint = startPoint;
             polygon.addPoint(newPoint);
             if (SwingUtilities.isLeftMouseButton(event))
@@ -123,6 +132,7 @@ public class CanvasController {
             canvasView.clearPolygonStart();
             canvasView.addDrawable(polygon);
             startPoint = currentPoint = newPoint = null;
+            toolbarModel.setLocked(false);
         } else {
             polygon.addPoint(newPoint);
             if (SwingUtilities.isLeftMouseButton(event))
@@ -145,8 +155,8 @@ public class CanvasController {
     }
 
     private Point2D snapToFixedAngle(Point2D start, Point2D current) {
-        double dx = current.x() - start.x();
-        double dy = current.y() - start.y();
+        double dx = current.getX() - start.getX();
+        double dy = current.getY() - start.getY();
 
         double angle = Math.atan2(dy, dx);
         double length = Math.sqrt(dx * dx + dy * dy);
@@ -154,8 +164,8 @@ public class CanvasController {
         double snappedAngle = Math.round(Math.toDegrees(angle) / 45.0) * 45.0;
 
         double rad = Math.toRadians(snappedAngle);
-        int snappedX = (int) Math.round(start.x() + Math.cos(rad) * length);
-        int snappedY = (int) Math.round(start.y() + Math.sin(rad) * length);
+        int snappedX = (int) Math.round(start.getX() + Math.cos(rad) * length);
+        int snappedY = (int) Math.round(start.getY() + Math.sin(rad) * length);
 
         return new Point2D(snappedX, snappedY);
     }
