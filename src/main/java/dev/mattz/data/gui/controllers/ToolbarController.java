@@ -2,29 +2,35 @@ package dev.mattz.data.gui.controllers;
 
 import dev.mattz.data.Mode;
 import dev.mattz.data.gui.models.ToolbarModel;
+import dev.mattz.data.gui.views.CanvasView;
 import dev.mattz.data.gui.views.ToolbarView;
 
 public class ToolbarController {
     private final ToolbarModel model;
 
-    public ToolbarController(ToolbarView view) {
+    public ToolbarController(ToolbarView toolbarView, CanvasView canvasView) {
         this.model = ToolbarModel.getInstance();
 
-        view.setJButtonSelectModeListener(_ -> {
+        toolbarView.setJButtonSelectModeListener(_ -> {
             model.setCurrentMode(Mode.MOVE);
-            view.setLocked(model.isLocked());
+            canvasView.setCurrentMode(Mode.MOVE);
+            toolbarView.setLocked(model.isLocked());
+            canvasView.repaint();
         });
-        view.setJButtonLineModeListener(_ -> {
+        toolbarView.setJButtonLineModeListener(_ -> {
             model.setCurrentMode(Mode.LINE);
-            view.setLocked(model.isLocked());
+            canvasView.setCurrentMode(Mode.LINE);
+            toolbarView.setLocked(model.isLocked());
         });
-        view.setJButtonPolygonModeListener(_ -> {
+        toolbarView.setJButtonPolygonModeListener(_ -> {
             model.setCurrentMode(Mode.POLYGON);
-            view.setLocked(model.isLocked());
+            canvasView.setCurrentMode(Mode.POLYGON);
+            toolbarView.setLocked(model.isLocked());
         });
-        view.setJButtonPencilModeListener(_ -> {
+        toolbarView.setJButtonPencilModeListener(_ -> {
             model.setCurrentMode(Mode.PENCIL);
-            view.setLocked(model.isLocked());
+            canvasView.setCurrentMode(Mode.PENCIL);
+            toolbarView.setLocked(model.isLocked());
         });
     }
 }

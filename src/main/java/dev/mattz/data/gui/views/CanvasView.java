@@ -1,5 +1,6 @@
 package dev.mattz.data.gui.views;
 
+import dev.mattz.data.Mode;
 import dev.mattz.data.graphics.drawable_objects.*;
 import dev.mattz.data.graphics.drawable_objects.Polygon;
 import dev.mattz.data.graphics.rasterizers.PencilRasterizer;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 public class CanvasView extends JPanel {
     private final BufferedImage bufferedImage;
+    private Mode currentMode = Mode.MOVE;
 
     LineRasterizer lineRasterizer = new LineRasterizerBresenham();
     GradientLineRasterizer gradientLineRasterizer = new GradientLineRasterizerBresenham();
@@ -26,9 +28,9 @@ public class CanvasView extends JPanel {
     private Color tempColor;
 
     ArrayList<Drawable> drawables;
-
+    
     public CanvasView(int width, int height) {
-        this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         drawables = new ArrayList<>();
         this.setPreferredSize(new Dimension(width, height));
@@ -40,17 +42,28 @@ public class CanvasView extends JPanel {
         super.paintComponent(graphics);
         Graphics2D g2d = (Graphics2D) graphics;
         g2d.drawImage(bufferedImage, 0, 0, null);
-        if (tempStart != null && tempEnd != null) {
+        if (currentMode == Mode.MOVE) {
+            drawAll();
+            for (Drawable drawable : drawables) {
+                for (Point2D point : drawable.getAllPoints()) {
+                    drawCircle(point.getX(), point.getY());
+                }
+            }
+            repaint();
+        } else if (currentMode == Mode.LINE && tempStart != null && tempEnd != null) {
             drawAll();
             lineRasterizer.draw(tempStart, tempEnd, tempColor, bufferedImage);
-        }
-
-        //Polygon start point
-        if (polygonStart != null) {
+        } else if (currentMode == Mode.POLYGON && polygonStart != null) {
             drawCircle(polygonStart.getX(), polygonStart.getY());
             repaint();
         }
+
+
         g2d.dispose();
+    }
+
+    public ArrayList<Drawable> getDrawables() {
+        return drawables;
     }
 
     private void drawAll() {
@@ -59,6 +72,7 @@ public class CanvasView extends JPanel {
             if (drawable instanceof GradientLine) {
                 gradientLineRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Line) {
+                System.out.println("Vykreslení čáry");
                 lineRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Polygon) {
                 polygonRasterizer.draw(drawable, bufferedImage);
@@ -69,7 +83,11 @@ public class CanvasView extends JPanel {
         repaint();
     }
 
-    public void drawCircle(int x, int y){
+    public void setCurrentMode(Mode currentMode) {
+        this.currentMode = currentMode;
+    }
+
+    public void drawCircle(int x, int y) {
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setColor(Color.RED);
         int radius = 5;

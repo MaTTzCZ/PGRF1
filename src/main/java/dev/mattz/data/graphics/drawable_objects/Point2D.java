@@ -26,6 +26,11 @@ public class Point2D implements Drawable {
         this.y = y;
     }
 
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public List<Point2D> getAllPoints() {
         return List.of(this);

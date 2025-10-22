@@ -16,7 +16,7 @@ public class CanvasController {
     private final ColorPaletteModel colorPaletteModel;
     private final ToolbarModel toolbarModel;
 
-    private Point2D startPoint, currentPoint, newPoint;
+    private Point2D startPoint, currentPoint, newPoint, movedPoint;
     Polygon polygon;
     private PencilStroke pencilStroke;
 
@@ -32,12 +32,21 @@ public class CanvasController {
             @Override
             public void mousePressed(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
+                    case MOVE -> {
+                        for (Drawable drawable : canvasView.getDrawables()) {
+                            for (Point2D point : drawable.getAllPoints()) {
+                                if (Math.abs(e.getX() - point.getX()) <= 5 && Math.abs(e.getY() - point.getY()) <= 5) {
+                                    movedPoint = point;
+                                    break;
+                                }
+                            }
+                            if (movedPoint != null) break;
+                        }
+                    }
                     case LINE -> {
-                        canvasView.setCurrentMode(Mode.LINE);
                         startPoint = new Point2D(e.getX(), e.getY());
                     }
                     case POLYGON -> {
-                        canvasView.setCurrentMode(Mode.POLYGON);
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             toolbarModel.setLocked(true);
                             if (startPoint == null) {
@@ -52,7 +61,6 @@ public class CanvasController {
                         }
                     }
                     case PENCIL -> {
-                        canvasView.setCurrentMode(Mode.PENCIL);
                         pencilMode(e);
                     }
 
@@ -62,6 +70,7 @@ public class CanvasController {
             @Override
             public void mouseReleased(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
+                    case MOVE -> movedPoint = null;
                     case LINE -> {
                         currentPoint = new Point2D(e.getX(), e.getY());
                         if (e.isShiftDown())
@@ -78,6 +87,12 @@ public class CanvasController {
             @Override
             public void mouseDragged(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
+                    case MOVE -> {
+                        if (movedPoint != null){
+                            System.out.println("negr");
+                            movedPoint.setPosition(e.getX(), e.getY());
+                        }
+                    }
                     case LINE -> lineMode(e);
                     case PENCIL -> {
                         canvasView.setRGB(e.getX(), e.getY(), SwingUtilities.isLeftMouseButton(e) ? colorPaletteModel.getPrimaryColor() : colorPaletteModel.getSecondaryColor());
@@ -101,7 +116,8 @@ public class CanvasController {
     private void lineMode(MouseEvent event) {
         if (currentPoint == null) {
             Point2D newPoint = new Point2D(event.getX(), event.getY());
-            if (event.isShiftDown()) newPoint = snapToFixedAngle(startPoint, new Point2D(event.getX(), event.getY()));
+            if (event.isShiftDown())
+                newPoint = snapToFixedAngle(startPoint, new Point2D(event.getX(), event.getY()));
             if (SwingUtilities.isLeftMouseButton(event))
                 canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))

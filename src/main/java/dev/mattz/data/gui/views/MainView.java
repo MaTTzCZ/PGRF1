@@ -27,7 +27,7 @@ public class MainView extends JFrame {
     public MainView() {
         new CanvasController(canvasView, this);
         new ColorPaletteController(colorPaletteView);
-        new ToolbarController(toolbarView);
+        new ToolbarController(toolbarView, canvasView);
 
         this.setTitle("Malování");
         this.setSize(800, 600);
