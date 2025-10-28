@@ -14,11 +14,18 @@ public class MainView extends JFrame {
     JPanel jPanelBottom = new JPanel();
 
     JMenuBar jMenuBarMain = new JMenuBar();
+
     JMenu jMenuCanvas = new JMenu("Canvas");
     JMenu jMenuToolbar = new JMenu("Toolbar");
 
+    JMenu jMenuToolbarSubmenuLine = new JMenu("Line");
+    JMenu jMenuToolbarSubmenuPolygon = new JMenu("Polygon");
+
     JMenuItem jMenuCanvasItem1 = new JMenuItem("Clear");
-    JCheckBoxMenuItem jMenuToolbarItem1 = new JCheckBoxMenuItem("Line Gradient");
+
+    JCheckBoxMenuItem jCheckBoxMenuItemLineGradient = new JCheckBoxMenuItem("Line Gradient");
+    JCheckBoxMenuItem jCheckBoxMenuItemFillPolygon = new JCheckBoxMenuItem("Fill Polygon");
+
 
     ColorPaletteView colorPaletteView = new ColorPaletteView();
     ToolbarView toolbarView = new ToolbarView();
@@ -58,7 +65,12 @@ public class MainView extends JFrame {
 
         jMenuCanvas.add(jMenuCanvasItem1);
 
-        jMenuToolbar.add(jMenuToolbarItem1);
+        jMenuToolbar.add(jMenuToolbarSubmenuLine);
+        jMenuToolbar.add(jMenuToolbarSubmenuPolygon);
+
+        jMenuToolbarSubmenuLine.add(jCheckBoxMenuItemLineGradient);
+
+        jMenuToolbarSubmenuPolygon.add(jCheckBoxMenuItemFillPolygon);
 
         jMenuCanvasItem1.addActionListener(_ -> {
             canvasView.clearDrawables();
@@ -67,6 +79,11 @@ public class MainView extends JFrame {
     }
 
     public boolean isGradientLineSelected(){
-        return jMenuToolbarItem1.isSelected();
+        return jCheckBoxMenuItemLineGradient.isSelected();
     }
+
+    public boolean isPolygonFillSelected(){
+        return jCheckBoxMenuItemFillPolygon.isSelected();
+    }
+
 }

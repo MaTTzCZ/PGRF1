@@ -1,6 +1,5 @@
 package dev.mattz.data.gui.controllers;
 
-import dev.mattz.data.Mode;
 import dev.mattz.data.graphics.drawable_objects.*;
 import dev.mattz.data.gui.models.ColorPaletteModel;
 import dev.mattz.data.gui.models.ToolbarModel;
@@ -43,9 +42,7 @@ public class CanvasController {
                             if (movedPoint != null) break;
                         }
                     }
-                    case LINE -> {
-                        startPoint = new Point2D(e.getX(), e.getY());
-                    }
+                    case LINE, RECTANGLE -> startPoint = new Point2D(e.getX(), e.getY());
                     case POLYGON -> {
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             toolbarModel.setLocked(true);
@@ -60,9 +57,8 @@ public class CanvasController {
                             }
                         }
                     }
-                    case PENCIL -> {
-                        pencilMode(e);
-                    }
+                    case PENCIL -> pencilMode(e);
+                    case FILL -> fillMode(e);
 
                 }
             }
@@ -88,12 +84,11 @@ public class CanvasController {
             public void mouseDragged(MouseEvent e) {
                 switch (toolbarModel.getCurrentMode()) {
                     case MOVE -> {
-                        if (movedPoint != null){
-                            System.out.println("negr");
+                        if (movedPoint != null) {
                             movedPoint.setPosition(e.getX(), e.getY());
                         }
                     }
-                    case LINE -> lineMode(e);
+                    case LINE, RECTANGLE -> lineMode(e);
                     case PENCIL -> {
                         canvasView.setRGB(e.getX(), e.getY(), SwingUtilities.isLeftMouseButton(e) ? colorPaletteModel.getPrimaryColor() : colorPaletteModel.getSecondaryColor());
                         pencilStroke.addPoint(new Point2D(e.getX(), e.getY()));
@@ -105,7 +100,11 @@ public class CanvasController {
         canvasView.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_C) {
+                if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+                    canvasView.undo();
+                } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y) {
+                    canvasView.redo();
+                } else if (e.getKeyCode() == KeyEvent.VK_C) {
                     canvasView.clearDrawables();
                     canvasView.clearBufferedImage();
                 }
@@ -113,15 +112,22 @@ public class CanvasController {
         });
     }
 
+
     private void lineMode(MouseEvent event) {
         if (currentPoint == null) {
             Point2D newPoint = new Point2D(event.getX(), event.getY());
             if (event.isShiftDown())
                 newPoint = snapToFixedAngle(startPoint, new Point2D(event.getX(), event.getY()));
             if (SwingUtilities.isLeftMouseButton(event))
-                canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor());
+                if (mainView.isGradientLineSelected())
+                    canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
+                else
+                    canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getPrimaryColor());
             else if (SwingUtilities.isRightMouseButton(event))
-                canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor());
+                if (mainView.isGradientLineSelected())
+                    canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
+                else
+                    canvasView.setTemporaryLine(startPoint, newPoint, colorPaletteModel.getSecondaryColor());
         } else {
             if (SwingUtilities.isLeftMouseButton(event)) {
                 if (mainView.isGradientLineSelected())
@@ -146,6 +152,8 @@ public class CanvasController {
             if (SwingUtilities.isLeftMouseButton(event))
                 canvasView.drawPolygonLine(currentPoint, startPoint, colorPaletteModel.getPrimaryColor());
             canvasView.clearPolygonStart();
+//            if (mainView.isPolygonFillSelected())
+//                canvasView.addDrawable();
             canvasView.addDrawable(polygon);
             startPoint = currentPoint = newPoint = null;
             toolbarModel.setLocked(false);
@@ -168,6 +176,17 @@ public class CanvasController {
             canvasView.addDrawable(pencilStroke);
             pencilStroke = null;
         }
+    }
+
+    private void fillMode(MouseEvent event) {
+        if (SwingUtilities.isLeftMouseButton(event))
+            canvasView.seedFill(event.getX(), event.getY(), colorPaletteModel.getPrimaryColor());
+        else if (SwingUtilities.isRightMouseButton(event))
+            canvasView.seedFill(event.getX(), event.getY(), colorPaletteModel.getSecondaryColor());
+    }
+
+    private void rectangleMode(MouseEvent event){
+        if()
     }
 
     private Point2D snapToFixedAngle(Point2D start, Point2D current) {

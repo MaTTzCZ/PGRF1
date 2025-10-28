@@ -5,4 +5,6 @@ public enum Mode {
     LINE,
     POLYGON,
     PENCIL,
+    FILL,
+    RECTANGLE,
 }

@@ -15,6 +15,9 @@ public class ToolbarView extends JPanel {
     JButton jButtonLineMode = new JButton();
     JButton jButtonPolygonMode = new JButton();
     JButton jButtonPencilMode = new JButton();
+    JButton jButtonFillMode = new JButton();
+    JButton jButtonRectangleMode = new JButton();
+
 
     JButton currentButton = jButtonSelectMode;
 
@@ -23,6 +26,8 @@ public class ToolbarView extends JPanel {
         this.add(jButtonLineMode);
         this.add(jButtonPolygonMode);
         this.add(jButtonPencilMode);
+        this.add(jButtonFillMode);
+        this.add(jButtonRectangleMode);
 
         jButtonSelectMode.setBounds(0, 0, 40, 40);
         jButtonSelectMode.setBorder(null);
@@ -61,6 +66,24 @@ public class ToolbarView extends JPanel {
                 setCurrentButton(this.jButtonPencilMode);
         });
 
+        jButtonFillMode.setBounds(160, 0, 40, 40);
+        jButtonFillMode.setBorder(null);
+        jButtonFillMode.setFocusable(false);
+        jButtonFillMode.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/fill_tool_icon.png"))));
+        jButtonFillMode.addActionListener(_ -> {
+            if (!isLocked)
+                setCurrentButton(this.jButtonFillMode);
+        });
+
+        jButtonRectangleMode.setBounds(200, 0, 40, 40);
+        jButtonRectangleMode.setBorder(null);
+        jButtonRectangleMode.setFocusable(false);
+        jButtonRectangleMode.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/rectangle_tool_icon.png"))));
+        jButtonRectangleMode.addActionListener(_ -> {
+            if (!isLocked)
+                setCurrentButton(this.jButtonRectangleMode);
+        });
+
     }
 
     public void setLocked(boolean isLocked) {
@@ -90,4 +113,13 @@ public class ToolbarView extends JPanel {
     public void setJButtonPencilModeListener(ActionListener listener) {
         jButtonPencilMode.addActionListener(listener);
     }
+
+    public void setJButtonFillModeListener(ActionListener listener) {
+        jButtonFillMode.addActionListener(listener);
+    }
+
+    public void setJButtonRectangleModeListener(ActionListener listener) {
+        jButtonRectangleMode.addActionListener(listener);
+    }
+
 }

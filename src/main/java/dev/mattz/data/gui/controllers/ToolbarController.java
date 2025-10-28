@@ -32,5 +32,15 @@ public class ToolbarController {
             canvasView.setCurrentMode(Mode.PENCIL);
             toolbarView.setLocked(model.isLocked());
         });
+        toolbarView.setJButtonFillModeListener(_ -> {
+            model.setCurrentMode(Mode.FILL);
+            canvasView.setCurrentMode(Mode.FILL);
+            toolbarView.setLocked(model.isLocked());
+        });
+        toolbarView.setJButtonRectangleModeListener(_ -> {
+            model.setCurrentMode(Mode.RECTANGLE);
+            canvasView.setCurrentMode(Mode.RECTANGLE);
+            toolbarView.setLocked(model.isLocked());
+        });
     }
 }
