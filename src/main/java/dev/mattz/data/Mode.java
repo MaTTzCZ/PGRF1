@@ -1,10 +1,10 @@
 package dev.mattz.data;
 
 public enum Mode {
-    MOVE,
+    POINT_MOVE,
     LINE,
     POLYGON,
-    PENCIL,
-    FILL,
+    PENCIL_DRAW,
+    SEED_FILL,
     RECTANGLE,
 }

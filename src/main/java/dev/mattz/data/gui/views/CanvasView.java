@@ -33,7 +33,7 @@ public class CanvasView extends JPanel {
     private Point2D lineStart, lineEnd, polygonStart;
     private Color tempColor1, tempColor2;
 
-    private Mode currentMode = Mode.MOVE;
+    private Mode currentMode = Mode.POINT_MOVE;
 
     public CanvasView(int width, int height) {
         this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -49,7 +49,7 @@ public class CanvasView extends JPanel {
         super.paintComponent(graphics);
         Graphics2D g2d = (Graphics2D) graphics;
         g2d.drawImage(bufferedImage, 0, 0, null);
-        if (currentMode == Mode.MOVE) {
+        if (currentMode == Mode.POINT_MOVE) {
             drawAll();
             for (Drawable drawable : drawables) {
                 if (!(drawable instanceof PencilStroke) && !(drawable instanceof FillerBackgroundBasePoint)) {
@@ -170,7 +170,6 @@ public class CanvasView extends JPanel {
 
     public void setPolygonStart(Point2D point) {
         this.polygonStart = point;
-        repaint();
     }
 
     public void clearTemporaryLine() {
@@ -181,7 +180,6 @@ public class CanvasView extends JPanel {
 
     public void clearPolygonStart() {
         polygonStart = null;
-        repaint();
     }
 
     public void setRGB(int x, int y, Color color) {

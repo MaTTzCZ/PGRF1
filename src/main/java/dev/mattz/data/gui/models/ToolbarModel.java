@@ -8,7 +8,7 @@ public class ToolbarModel {
     private boolean isLocked;
 
     private ToolbarModel() {
-        this.currentMode = Mode.MOVE;
+        this.currentMode = Mode.POINT_MOVE;
         this.isLocked = false;
     }
 

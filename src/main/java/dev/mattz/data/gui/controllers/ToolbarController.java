@@ -12,8 +12,8 @@ public class ToolbarController {
         this.model = ToolbarModel.getInstance();
 
         toolbarView.setJButtonSelectModeListener(_ -> {
-            model.setCurrentMode(Mode.MOVE);
-            canvasView.setCurrentMode(Mode.MOVE);
+            model.setCurrentMode(Mode.POINT_MOVE);
+            canvasView.setCurrentMode(Mode.POINT_MOVE);
             toolbarView.setLocked(model.isLocked());
             canvasView.repaint();
         });
@@ -28,13 +28,13 @@ public class ToolbarController {
             toolbarView.setLocked(model.isLocked());
         });
         toolbarView.setJButtonPencilModeListener(_ -> {
-            model.setCurrentMode(Mode.PENCIL);
-            canvasView.setCurrentMode(Mode.PENCIL);
+            model.setCurrentMode(Mode.PENCIL_DRAW);
+            canvasView.setCurrentMode(Mode.PENCIL_DRAW);
             toolbarView.setLocked(model.isLocked());
         });
         toolbarView.setJButtonFillModeListener(_ -> {
-            model.setCurrentMode(Mode.FILL);
-            canvasView.setCurrentMode(Mode.FILL);
+            model.setCurrentMode(Mode.SEED_FILL);
+            canvasView.setCurrentMode(Mode.SEED_FILL);
             toolbarView.setLocked(model.isLocked());
         });
         toolbarView.setJButtonRectangleModeListener(_ -> {

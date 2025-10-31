@@ -42,7 +42,6 @@ public class ColorPaletteView extends JPanel {
             }
         });
         this.add(newButton);
-
     }
 
     public void addListener(MouseListener listener) {
