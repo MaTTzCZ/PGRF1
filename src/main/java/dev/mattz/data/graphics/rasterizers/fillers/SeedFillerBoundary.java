@@ -7,10 +7,10 @@ import dev.mattz.data.graphics.rasterizers.Rasterizer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class SeedFillerBorder implements Rasterizer {
+public class SeedFillerBoundary implements Rasterizer {
     PencilRasterizer pencilRasterizer;
 
-    public SeedFillerBorder() {
+    public SeedFillerBoundary() {
         pencilRasterizer = new PencilRasterizer();
     }
 

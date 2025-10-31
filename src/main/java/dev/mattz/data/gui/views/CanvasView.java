@@ -23,7 +23,6 @@ public class CanvasView extends JPanel {
     ArrayDeque<Drawable> drawables;
     Stack<Drawable> drawablesRedo;
 
-
     LineRasterizer lineRasterizer = new LineRasterizerBresenham();
     GradientLineRasterizer gradientLineRasterizer = new GradientLineRasterizerBresenham();
     PolygonRasterizer polygonRasterizer = new PolygonRasterizer();
@@ -58,7 +57,6 @@ public class CanvasView extends JPanel {
                     }
                 }
             }
-            repaint();
         } else if (lineStart != null && lineEnd != null) {
             drawAll();
             if (tempColor1 != null && tempColor2 == null)
@@ -75,7 +73,7 @@ public class CanvasView extends JPanel {
         return drawables;
     }
 
-    private void drawAll() {
+    public void drawAll() {
         clearBufferedImage();
         for (Drawable drawable : drawables) {
             if (drawable instanceof GradientLine) {
@@ -102,7 +100,10 @@ public class CanvasView extends JPanel {
     public void seedFill(int x, int y, Color color) {
         drawables.add(new FillerBackgroundBasePoint(x, y, new Color(bufferedImage.getRGB(x, y)), color));
         seedFillerBackground.fill(x, y, new Color(bufferedImage.getRGB(x, y)), color, bufferedImage);
-        repaint();
+    }
+
+    public Mode getCurrentMode() {
+        return currentMode;
     }
 
     public void setCurrentMode(Mode currentMode) {
@@ -117,13 +118,12 @@ public class CanvasView extends JPanel {
         graphics.dispose();
     }
 
-    public void drawPolygonLine(Point2D start, Point2D end, Color color) {
+    public void drawLine(Point2D start, Point2D end, Color color) {
         lineRasterizer.draw(start, end, color, bufferedImage);
     }
 
     public void addDrawable(Drawable drawable) {
         drawables.addLast(drawable);
-        drawAll();
     }
 
     public void clearDrawables() {
@@ -157,7 +157,6 @@ public class CanvasView extends JPanel {
         this.lineStart = start;
         this.lineEnd = end;
         this.tempColor1 = color;
-        repaint();
     }
 
     public void setTemporaryLine(Point2D start, Point2D end, Color color1, Color color2) {
@@ -165,7 +164,6 @@ public class CanvasView extends JPanel {
         this.lineEnd = end;
         this.tempColor1 = color1;
         this.tempColor2 = color2;
-        repaint();
     }
 
     public void setPolygonStart(Point2D point) {
@@ -175,7 +173,6 @@ public class CanvasView extends JPanel {
     public void clearTemporaryLine() {
         this.lineStart = this.lineEnd = null;
         this.tempColor1 = this.tempColor2 = null;
-        drawAll();
     }
 
     public void clearPolygonStart() {
@@ -184,7 +181,6 @@ public class CanvasView extends JPanel {
 
     public void setRGB(int x, int y, Color color) {
         pencilRasterizer.draw(x, y, color, bufferedImage);
-        repaint();
     }
 }
 

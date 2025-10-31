@@ -32,7 +32,7 @@ public class MainView extends JFrame {
     CanvasView canvasView = new CanvasView(800, 700);
 
     public MainView() {
-        new CanvasController(canvasView, this);
+        new CanvasController(this, canvasView, toolbarView);
         new ColorPaletteController(colorPaletteView);
         new ToolbarController(toolbarView, canvasView);
 

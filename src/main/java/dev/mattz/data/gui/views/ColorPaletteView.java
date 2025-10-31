@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class ColorPaletteView extends JPanel {
     JButton jButtonPrimaryColor = new JButton();
@@ -29,11 +28,12 @@ public class ColorPaletteView extends JPanel {
         jButtonSecondaryColor.setEnabled(false);
     }
 
-    public void createButton(int i, int j, Color color) {
+    public void createButton(int i, int j, Color color, MouseAdapter adapter) {
         newButton = new JButton();
         newButton.setBackground(color);
         newButton.setFocusable(false);
         newButton.setBounds(i * 20 + 50, j * 20, 20, 20);
+        newButton.addMouseListener(adapter);
         newButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -42,9 +42,5 @@ public class ColorPaletteView extends JPanel {
             }
         });
         this.add(newButton);
-    }
-
-    public void addListener(MouseListener listener) {
-        newButton.addMouseListener(listener);
     }
 }
