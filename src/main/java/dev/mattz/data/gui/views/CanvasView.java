@@ -3,9 +3,12 @@ package dev.mattz.data.gui.views;
 import dev.mattz.data.Mode;
 import dev.mattz.data.graphics.drawable_objects.*;
 import dev.mattz.data.graphics.drawable_objects.Polygon;
+import dev.mattz.data.graphics.rasterizers.FilledPolygonRasterizer;
 import dev.mattz.data.graphics.rasterizers.PencilRasterizer;
 import dev.mattz.data.graphics.rasterizers.PolygonRasterizer;
+import dev.mattz.data.graphics.rasterizers.fillers.ScanLinePolygonIntersectionFiller;
 import dev.mattz.data.graphics.rasterizers.fillers.SeedFillerBackground;
+import dev.mattz.data.graphics.rasterizers.fillers.SeedFillerBoundary;
 import dev.mattz.data.graphics.rasterizers.gradient_line.GradientLineRasterizer;
 import dev.mattz.data.graphics.rasterizers.gradient_line.GradientLineRasterizerBresenham;
 import dev.mattz.data.graphics.rasterizers.line.LineRasterizer;
@@ -26,11 +29,15 @@ public class CanvasView extends JPanel {
     LineRasterizer lineRasterizer = new LineRasterizerBresenham();
     GradientLineRasterizer gradientLineRasterizer = new GradientLineRasterizerBresenham();
     PolygonRasterizer polygonRasterizer = new PolygonRasterizer();
+    FilledPolygonRasterizer filledPolygonRasterizer = new FilledPolygonRasterizer();
     PencilRasterizer pencilRasterizer = new PencilRasterizer();
     SeedFillerBackground seedFillerBackground = new SeedFillerBackground();
+    SeedFillerBoundary seedFillerBoundary = new SeedFillerBoundary();
+
+    ScanLinePolygonIntersectionFiller scanLinePolygonIntersectionFiller = new ScanLinePolygonIntersectionFiller();
 
     private Point2D lineStart, lineEnd, polygonStart;
-    private Color tempColor1, tempColor2;
+    private Color tempColorPrimary, tempColorSecondary;
 
     private Mode currentMode = Mode.POINT_MOVE;
 
@@ -51,7 +58,7 @@ public class CanvasView extends JPanel {
         if (currentMode == Mode.POINT_MOVE) {
             drawAll();
             for (Drawable drawable : drawables) {
-                if (!(drawable instanceof PencilStroke) && !(drawable instanceof FillerBackgroundBasePoint)) {
+                if (!(drawable instanceof PencilStroke) && !(drawable instanceof SeedFillerBackgroundBasePoint)) {
                     for (Point2D point : drawable.getAllPoints()) {
                         drawCircle(point.getX(), point.getY());
                     }
@@ -59,10 +66,10 @@ public class CanvasView extends JPanel {
             }
         } else if (lineStart != null && lineEnd != null) {
             drawAll();
-            if (tempColor1 != null && tempColor2 == null)
-                lineRasterizer.draw(lineStart, lineEnd, tempColor1, bufferedImage);
-            else gradientLineRasterizer.draw(lineStart, lineEnd, tempColor1, tempColor2, bufferedImage);
-        } else if (currentMode == Mode.POLYGON && polygonStart != null) {
+            if (tempColorPrimary != null && tempColorSecondary == null)
+                lineRasterizer.draw(lineStart, lineEnd, tempColorPrimary, bufferedImage);
+            else gradientLineRasterizer.draw(lineStart, lineEnd, tempColorPrimary, tempColorSecondary, bufferedImage);
+        } else if (polygonStart != null) {
             drawCircle(polygonStart.getX(), polygonStart.getY());
             repaint();
         }
@@ -80,16 +87,28 @@ public class CanvasView extends JPanel {
                 gradientLineRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Line) {
                 lineRasterizer.draw(drawable, bufferedImage);
+            } else if (drawable instanceof PolygonIntersection) {
+                scanLinePolygonIntersectionFiller.draw(drawable, bufferedImage);
+            } else if (drawable instanceof FilledPolygon) {
+                filledPolygonRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Polygon) {
                 polygonRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof PencilStroke) {
                 pencilRasterizer.draw(drawable, bufferedImage);
-            } else if (drawable instanceof FillerBackgroundBasePoint fillerBackgroundBasePoint) {
+            } else if (drawable instanceof SeedFillerBackgroundBasePoint seedFillerBackgroundBasePoint) {
                 seedFillerBackground.fill(
-                        fillerBackgroundBasePoint.getX(),
-                        fillerBackgroundBasePoint.getY(),
-                        fillerBackgroundBasePoint.getBackgroundColor(),
-                        fillerBackgroundBasePoint.getFillColor(),
+                        seedFillerBackgroundBasePoint.getX(),
+                        seedFillerBackgroundBasePoint.getY(),
+                        seedFillerBackgroundBasePoint.getFillColor(),
+                        seedFillerBackgroundBasePoint.getBackgroundColor(),
+                        bufferedImage
+                );
+            } else if (drawable instanceof SeedFillerBoundaryBasePoint seedFillerBoundaryBasePoint) {
+                seedFillerBoundary.fill(
+                        seedFillerBoundaryBasePoint.getX(),
+                        seedFillerBoundaryBasePoint.getY(),
+                        seedFillerBoundaryBasePoint.getFillColor(),
+                        seedFillerBoundaryBasePoint.getBackgroundColor(),
                         bufferedImage
                 );
             }
@@ -97,9 +116,14 @@ public class CanvasView extends JPanel {
         repaint();
     }
 
-    public void seedFill(int x, int y, Color color) {
-        drawables.add(new FillerBackgroundBasePoint(x, y, new Color(bufferedImage.getRGB(x, y)), color));
-        seedFillerBackground.fill(x, y, new Color(bufferedImage.getRGB(x, y)), color, bufferedImage);
+    public void seedFillBackground(int x, int y, Color fillColor) {
+        drawables.add(new SeedFillerBackgroundBasePoint(x, y, fillColor, new Color(bufferedImage.getRGB(x, y))));
+        seedFillerBackground.fill(x, y, fillColor, new Color(bufferedImage.getRGB(x, y)), bufferedImage);
+    }
+
+    public void seedFillBoundary(int x, int y, Color fillColor, Color boundaryColor) {
+        drawables.add(new SeedFillerBoundaryBasePoint(x, y, fillColor, boundaryColor));
+        seedFillerBoundary.fill(x, y, fillColor, boundaryColor, bufferedImage);
     }
 
     public Mode getCurrentMode() {
@@ -123,7 +147,7 @@ public class CanvasView extends JPanel {
     }
 
     public void addDrawable(Drawable drawable) {
-        drawables.addLast(drawable);
+        drawables.add(drawable);
     }
 
     public void clearDrawables() {
@@ -156,14 +180,14 @@ public class CanvasView extends JPanel {
     public void setTemporaryLine(Point2D start, Point2D end, Color color) {
         this.lineStart = start;
         this.lineEnd = end;
-        this.tempColor1 = color;
+        this.tempColorPrimary = color;
     }
 
     public void setTemporaryLine(Point2D start, Point2D end, Color color1, Color color2) {
         this.lineStart = start;
         this.lineEnd = end;
-        this.tempColor1 = color1;
-        this.tempColor2 = color2;
+        this.tempColorPrimary = color1;
+        this.tempColorSecondary = color2;
     }
 
     public void setPolygonStart(Point2D point) {
@@ -172,7 +196,7 @@ public class CanvasView extends JPanel {
 
     public void clearTemporaryLine() {
         this.lineStart = this.lineEnd = null;
-        this.tempColor1 = this.tempColor2 = null;
+        this.tempColorPrimary = this.tempColorSecondary = null;
     }
 
     public void clearPolygonStart() {

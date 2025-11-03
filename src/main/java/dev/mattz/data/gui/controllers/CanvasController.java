@@ -19,10 +19,10 @@ public class CanvasController {
 
     private Point2D pointMoveModeSelectedPoint;
     private Point2D lineModeStartPoint, lineModeEndPoint;
-    private Point2D polygonModeStartPoint, polygonModeCurrentPoint;
+    private Point2D polygonStartPoint, polygonCurrentPoint;
     private Point2D rectangleBaseStartPoint, rectangleBaseEndPoint, rectangleAltitude;
 
-    private Polygon tempPolygon;
+    private Polygon tempPolygon, tempIntersectionPolygon;
     private PencilStroke tempPencilStroke;
     private Rectangle tempRectangle;
 
@@ -41,9 +41,10 @@ public class CanvasController {
                     case POINT_MOVE -> pointMoveModeMousePressed(event);
                     case LINE -> lineModeMousePressed(event);
                     case POLYGON -> polygonModeMousePressed(event);
-                    case PENCIL_DRAW -> pencilModeMousePressed(event);
+                    case PENCIL_DRAW -> pencilDrawModeMousePressed(event);
                     case SEED_FILL -> seedFillModeMousePressed(event);
                     case RECTANGLE -> rectangleModeMousePressed(event);
+                    case POLYGON_INTERSECTION -> polygonIntersectionModeMousePressed(event);
                 }
             }
 
@@ -52,7 +53,7 @@ public class CanvasController {
                 switch (canvasView.getCurrentMode()) {
                     case POINT_MOVE -> pointMoveModeMouseReleased();
                     case LINE -> lineModeMouseReleased(event);
-                    case PENCIL_DRAW -> pencilModeMouseReleased();
+                    case PENCIL_DRAW -> pencilDrawModeMouseReleased();
                     case RECTANGLE -> rectangleModeMouseReleased(event);
                 }
 
@@ -65,7 +66,7 @@ public class CanvasController {
                 switch (canvasView.getCurrentMode()) {
                     case POINT_MOVE -> pointMoveModeMouseDragged(event);
                     case LINE -> lineModeMouseDragged(event);
-                    case PENCIL_DRAW -> pencilModeMouseDragged(event);
+                    case PENCIL_DRAW -> pencilDrawModeMouseDragged(event);
                     case RECTANGLE -> rectangleModeMouseDragged(event);
                 }
             }
@@ -92,8 +93,7 @@ public class CanvasController {
     }
 
     private void pointMoveModeMouseDragged(MouseEvent event) {
-        if (pointMoveModeSelectedPoint != null)
-            pointMoveModeSelectedPoint.setPosition(event.getX(), event.getY());
+        if (pointMoveModeSelectedPoint != null) pointMoveModeSelectedPoint.setPosition(event.getX(), event.getY());
 
     }
 
@@ -142,28 +142,30 @@ public class CanvasController {
     private void polygonModeMousePressed(MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event)) {
             toolbarView.setLocked(true);
-            if (polygonModeStartPoint == null) {
-                tempPolygon = new Polygon(colorPaletteModel.getPrimaryColor());
-                polygonModeStartPoint = polygonModeCurrentPoint = new Point2D(event.getX(), event.getY());
-                tempPolygon.addPoint(polygonModeStartPoint);
-                canvasView.setPolygonStart(polygonModeStartPoint);
+            if (polygonStartPoint == null) {
+                if (mainView.isPolygonFillSelected())
+                    tempPolygon = new FilledPolygon(colorPaletteModel.getPrimaryColor());
+                else tempPolygon = new Polygon(colorPaletteModel.getPrimaryColor());
+                polygonStartPoint = polygonCurrentPoint = new Point2D(event.getX(), event.getY());
+                tempPolygon.addPoint(polygonStartPoint);
+                canvasView.setPolygonStart(polygonStartPoint);
             } else {
                 Point2D polygonModeNextPoint = new Point2D(event.getX(), event.getY());
-                if (Math.abs(polygonModeNextPoint.getX() - polygonModeStartPoint.getX()) <= 5 && Math.abs(polygonModeNextPoint.getY() - polygonModeStartPoint.getY()) <= 5) {
-                    polygonModeNextPoint = polygonModeStartPoint;
-                    tempPolygon.addPoint(polygonModeNextPoint);
-                    if (SwingUtilities.isLeftMouseButton(event))
-                        canvasView.drawLine(polygonModeCurrentPoint, polygonModeStartPoint, colorPaletteModel.getPrimaryColor());
+                if (Math.abs(polygonModeNextPoint.getX() - polygonStartPoint.getX()) <= 5 && Math.abs(polygonModeNextPoint.getY() - polygonStartPoint.getY()) <= 5) {
+                    if (tempPolygon.size() > 2) {
+                        polygonModeNextPoint = polygonStartPoint;
+                        tempPolygon.addPoint(polygonModeNextPoint);
+                        canvasView.drawLine(polygonCurrentPoint, polygonStartPoint, colorPaletteModel.getPrimaryColor());
+                        canvasView.addDrawable(tempPolygon);
+                    }
                     canvasView.clearPolygonStart();
-                    canvasView.addDrawable(tempPolygon);
-                    polygonModeStartPoint = polygonModeCurrentPoint = null;
+                    polygonStartPoint = polygonCurrentPoint = null;
                     toolbarView.setLocked(false);
                     canvasView.drawAll();
                 } else {
                     tempPolygon.addPoint(polygonModeNextPoint);
-                    if (SwingUtilities.isLeftMouseButton(event))
-                        canvasView.drawLine(polygonModeCurrentPoint, polygonModeNextPoint, colorPaletteModel.getPrimaryColor());
-                    polygonModeCurrentPoint = polygonModeNextPoint;
+                    canvasView.drawLine(polygonCurrentPoint, polygonModeNextPoint, colorPaletteModel.getPrimaryColor());
+                    polygonCurrentPoint = polygonModeNextPoint;
                 }
             }
         }
@@ -171,34 +173,42 @@ public class CanvasController {
     }
 
     //Pencil draw mode
-    private void pencilModeMousePressed(MouseEvent event) {
+    private void pencilDrawModeMousePressed(MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event))
             tempPencilStroke = new PencilStroke(colorPaletteModel.getPrimaryColor());
         else if (SwingUtilities.isRightMouseButton(event))
             tempPencilStroke = new PencilStroke(colorPaletteModel.getSecondaryColor());
     }
 
-    private void pencilModeMouseDragged(MouseEvent event) {
+    private void pencilDrawModeMouseDragged(MouseEvent event) {
         canvasView.setRGB(event.getX(), event.getY(), SwingUtilities.isLeftMouseButton(event) ? colorPaletteModel.getPrimaryColor() : colorPaletteModel.getSecondaryColor());
         tempPencilStroke.addPoint(new Point2D(event.getX(), event.getY()));
         canvasView.repaint();
     }
 
-    private void pencilModeMouseReleased() {
+    private void pencilDrawModeMouseReleased() {
         canvasView.addDrawable(tempPencilStroke);
         tempPencilStroke = null;
     }
 
     //Seed fill mode
     private void seedFillModeMousePressed(MouseEvent event) {
-        if (SwingUtilities.isLeftMouseButton(event))
-            canvasView.seedFill(event.getX(), event.getY(), colorPaletteModel.getPrimaryColor());
-        else if (SwingUtilities.isRightMouseButton(event))
-            canvasView.seedFill(event.getX(), event.getY(), colorPaletteModel.getSecondaryColor());
-        canvasView.repaint();
+        if (mainView.isSeedFillBackgroundSelected()) {
+            if (SwingUtilities.isLeftMouseButton(event))
+                canvasView.seedFillBackground(event.getX(), event.getY(), colorPaletteModel.getPrimaryColor());
+            else if (SwingUtilities.isRightMouseButton(event))
+                canvasView.seedFillBackground(event.getX(), event.getY(), colorPaletteModel.getSecondaryColor());
+            canvasView.repaint();
+        } else {
+            if (SwingUtilities.isLeftMouseButton(event))
+                canvasView.seedFillBoundary(event.getX(), event.getY(), colorPaletteModel.getPrimaryColor(), colorPaletteModel.getSecondaryColor());
+            else if (SwingUtilities.isRightMouseButton(event))
+                canvasView.seedFillBoundary(event.getX(), event.getY(), colorPaletteModel.getSecondaryColor(), colorPaletteModel.getPrimaryColor());
+            canvasView.repaint();
+        }
     }
 
-    //Line mode
+    //Rectangle mode
     private void rectangleModeMousePressed(MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event)) {
             toolbarView.setLocked(true);
@@ -257,6 +267,45 @@ public class CanvasController {
         tempRectangle.addPoint(new Point2D((int) (rectangleBaseEndPoint.getX() + hx), (int) (rectangleBaseEndPoint.getY() + hy)));
         tempRectangle.addPoint(new Point2D((int) (rectangleBaseStartPoint.getX() + hx), (int) (rectangleBaseStartPoint.getY() + hy)));
         tempRectangle.addPoint(rectangleBaseStartPoint);
+    }
+
+    //Polygon Intersection mode
+    private void polygonIntersectionModeMousePressed(MouseEvent event) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
+            toolbarView.setLocked(true);
+            if (polygonStartPoint == null) {
+                tempPolygon = new Polygon(colorPaletteModel.getPrimaryColor());
+                polygonStartPoint = polygonCurrentPoint = new Point2D(event.getX(), event.getY());
+                tempPolygon.addPoint(polygonStartPoint);
+                canvasView.setPolygonStart(polygonStartPoint);
+            } else {
+                Point2D polygonModeNextPoint = new Point2D(event.getX(), event.getY());
+                if (Math.abs(polygonModeNextPoint.getX() - polygonStartPoint.getX()) <= 5 && Math.abs(polygonModeNextPoint.getY() - polygonStartPoint.getY()) <= 5) {
+                    if (tempPolygon.size() > 2) {
+                        polygonModeNextPoint = polygonStartPoint;
+                        tempPolygon.addPoint(polygonModeNextPoint);
+                        canvasView.drawLine(polygonCurrentPoint, polygonStartPoint, colorPaletteModel.getPrimaryColor());
+                        canvasView.addDrawable(tempPolygon);
+                        if (tempIntersectionPolygon == null)
+                            tempIntersectionPolygon = tempPolygon;
+                        else {
+                            canvasView.addDrawable(new PolygonIntersection(tempIntersectionPolygon.getColor(), tempIntersectionPolygon, tempPolygon));
+                            tempIntersectionPolygon = null;
+                        }
+                    }
+                    canvasView.clearPolygonStart();
+                    polygonStartPoint = polygonCurrentPoint = null;
+                    toolbarView.setLocked(false);
+                    canvasView.drawAll();
+                } else {
+                    tempPolygon.addPoint(polygonModeNextPoint);
+                    canvasView.drawLine(polygonCurrentPoint, polygonModeNextPoint, colorPaletteModel.getPrimaryColor());
+                    polygonCurrentPoint = polygonModeNextPoint;
+                }
+            }
+            canvasView.repaint();
+        }
+
     }
 
     private Point2D snapToFixedAngle(Point2D start, Point2D current) {

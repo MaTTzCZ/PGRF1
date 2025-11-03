@@ -12,24 +12,30 @@ import java.awt.event.ComponentEvent;
 public class MainView extends JFrame {
     JPanel jPanelMainContent = new JPanel(new BorderLayout());
     JPanel jPanelBottom = new JPanel();
-
     JMenuBar jMenuBarMain = new JMenuBar();
 
-    JMenu jMenuCanvas = new JMenu("Canvas");
     JMenu jMenuToolbar = new JMenu("Toolbar");
 
-    JMenu jMenuToolbarSubmenuLine = new JMenu("Line");
-    JMenu jMenuToolbarSubmenuPolygon = new JMenu("Polygon");
-
-    JMenuItem jMenuCanvasItem1 = new JMenuItem("Clear");
-
+    JMenu jMenuToolbarSubmenuLineMode = new JMenu("Line Mode");
     JCheckBoxMenuItem jCheckBoxMenuItemLineGradient = new JCheckBoxMenuItem("Line Gradient");
+
+    JMenu jMenuToolbarSubmenuPolygonMode = new JMenu("Polygon Mode");
     JCheckBoxMenuItem jCheckBoxMenuItemFillPolygon = new JCheckBoxMenuItem("Fill Polygon");
 
+    JMenu jMenuToolbarSubmenuSeedFillMode = new JMenu("Seed Fill Mode");
+    ButtonGroup buttonGroupSeedFillModes = new ButtonGroup();
+    JRadioButton jRadioButtonSeedFillBackground = new JRadioButton("Background mode");
+    JRadioButton jRadioButtonSeedFillBoundary = new JRadioButton("Boundary mode");
+
+    JMenu jMenuCanvas = new JMenu("Canvas");
+
+    JMenuItem jMenuCanvasClear = new JMenuItem("Clear");
 
     ColorPaletteView colorPaletteView = new ColorPaletteView();
     ToolbarView toolbarView = new ToolbarView();
-    CanvasView canvasView = new CanvasView(800, 700);
+    CanvasView canvasView = new CanvasView(1920, 900);
+
+    JScrollPane jScrollPane = new JScrollPane(canvasView);
 
     public MainView() {
         new CanvasController(this, canvasView, toolbarView);
@@ -37,42 +43,59 @@ public class MainView extends JFrame {
         new ToolbarController(toolbarView, canvasView);
 
         this.setTitle("Malování");
-        this.setSize(800, 600);
+        this.setExtendedState(MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setJMenuBar(jMenuBarMain);
+
+        jPanelMainContent.add(jScrollPane, BorderLayout.CENTER);
+
         this.add(jPanelMainContent, BorderLayout.CENTER);
         this.add(jPanelBottom, BorderLayout.SOUTH);
 
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                canvasView.setPreferredSize(new Dimension(getWidth(), getHeight()));
-                repaint();
-            }
-        });
+        jPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
+        jPanelBottom.add(colorPaletteView);
+        jPanelBottom.add(toolbarView);
 
-        jPanelMainContent.add(canvasView);
+
+        this.setTitle("Malování");
+        this.setExtendedState(MAXIMIZED_BOTH);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setJMenuBar(jMenuBarMain);
+        jPanelMainContent.add(jScrollPane);
+        this.add(jPanelMainContent, BorderLayout.CENTER);
+        this.add(jPanelBottom, BorderLayout.SOUTH);
+
+        jPanelMainContent.add(jScrollPane, BorderLayout.CENTER);
 
         jPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         jPanelBottom.add(colorPaletteView);
         jPanelBottom.add(toolbarView);
-        jPanelMainContent.setBackground(Color.RED);
 
         jMenuBarMain.add(jMenuCanvas);
         jMenuBarMain.add(jMenuToolbar);
 
-        jMenuCanvas.add(jMenuCanvasItem1);
+        jMenuCanvas.add(jMenuCanvasClear);
 
-        jMenuToolbar.add(jMenuToolbarSubmenuLine);
-        jMenuToolbar.add(jMenuToolbarSubmenuPolygon);
+        jMenuToolbar.add(jMenuToolbarSubmenuLineMode);
+        jMenuToolbar.add(jMenuToolbarSubmenuPolygonMode);
+        jMenuToolbar.add(jMenuToolbarSubmenuSeedFillMode);
 
-        jMenuToolbarSubmenuLine.add(jCheckBoxMenuItemLineGradient);
+        jMenuToolbarSubmenuLineMode.add(jCheckBoxMenuItemLineGradient);
 
-        jMenuToolbarSubmenuPolygon.add(jCheckBoxMenuItemFillPolygon);
+        jMenuToolbarSubmenuPolygonMode.add(jCheckBoxMenuItemFillPolygon);
 
-        jMenuCanvasItem1.addActionListener(_ -> {
+        buttonGroupSeedFillModes.add(jRadioButtonSeedFillBackground);
+        buttonGroupSeedFillModes.add(jRadioButtonSeedFillBoundary);
+
+        jMenuToolbarSubmenuSeedFillMode.add(jRadioButtonSeedFillBackground);
+        jMenuToolbarSubmenuSeedFillMode.add(jRadioButtonSeedFillBoundary);
+
+        jRadioButtonSeedFillBackground.setSelected(true);
+
+        jMenuCanvasClear.addActionListener(_ -> {
             canvasView.clearDrawables();
             canvasView.clearBufferedImage();
         });
@@ -86,4 +109,7 @@ public class MainView extends JFrame {
         return jCheckBoxMenuItemFillPolygon.isSelected();
     }
 
+    public boolean isSeedFillBackgroundSelected(){
+        return jRadioButtonSeedFillBackground.isSelected();
+    }
 }

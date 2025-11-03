@@ -1,5 +1,6 @@
 package dev.mattz.data.graphics.drawable_objects;
 
+import java.awt.*;
 import java.util.List;
 
 public class Point2D implements Drawable {
@@ -34,5 +35,10 @@ public class Point2D implements Drawable {
     @Override
     public List<Point2D> getAllPoints() {
         return List.of(this);
+    }
+
+    @Override
+    public Color getColor() {
+        return null;
     }
 }
