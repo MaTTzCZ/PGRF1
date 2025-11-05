@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.Stack;
 
 public interface SeedFiller extends Rasterizer {
-    default void spread(int x, int y, Color fillColor, BufferedImage bufferedImage, Stack<Point2D> pointsStack){
+    default void spread(int x, int y, Color fillColor, BufferedImage bufferedImage, Stack<Point2D> pointsStack) {
         bufferedImage.setRGB(x, y, fillColor.getRGB());
         pointsStack.push(new Point2D(x - 1, y));
         pointsStack.push(new Point2D(x + 1, y));

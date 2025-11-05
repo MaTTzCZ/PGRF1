@@ -6,7 +6,6 @@ import dev.mattz.data.graphics.drawable_objects.Polygon;
 import dev.mattz.data.graphics.rasterizers.FilledPolygonRasterizer;
 import dev.mattz.data.graphics.rasterizers.PencilRasterizer;
 import dev.mattz.data.graphics.rasterizers.PolygonRasterizer;
-import dev.mattz.data.graphics.rasterizers.fillers.ScanLinePolygonIntersectionFiller;
 import dev.mattz.data.graphics.rasterizers.fillers.SeedFillerBackground;
 import dev.mattz.data.graphics.rasterizers.fillers.SeedFillerBoundary;
 import dev.mattz.data.graphics.rasterizers.gradient_line.GradientLineRasterizer;
@@ -18,7 +17,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.Stack;
 
 public class CanvasView extends JPanel {
@@ -33,8 +31,6 @@ public class CanvasView extends JPanel {
     PencilRasterizer pencilRasterizer = new PencilRasterizer();
     SeedFillerBackground seedFillerBackground = new SeedFillerBackground();
     SeedFillerBoundary seedFillerBoundary = new SeedFillerBoundary();
-
-    ScanLinePolygonIntersectionFiller scanLinePolygonIntersectionFiller = new ScanLinePolygonIntersectionFiller();
 
     private Point2D lineStart, lineEnd, polygonStart;
     private Color tempColorPrimary, tempColorSecondary;
@@ -76,7 +72,7 @@ public class CanvasView extends JPanel {
         g2d.dispose();
     }
 
-    public Queue<Drawable> getDrawables() {
+    public ArrayDeque<Drawable> getDrawables() {
         return drawables;
     }
 
@@ -87,9 +83,7 @@ public class CanvasView extends JPanel {
                 gradientLineRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Line) {
                 lineRasterizer.draw(drawable, bufferedImage);
-            } else if (drawable instanceof PolygonIntersection) {
-                scanLinePolygonIntersectionFiller.draw(drawable, bufferedImage);
-            } else if (drawable instanceof FilledPolygon) {
+            }  else if (drawable instanceof FilledPolygon) {
                 filledPolygonRasterizer.draw(drawable, bufferedImage);
             } else if (drawable instanceof Polygon) {
                 polygonRasterizer.draw(drawable, bufferedImage);
@@ -148,6 +142,12 @@ public class CanvasView extends JPanel {
 
     public void addDrawable(Drawable drawable) {
         drawables.add(drawable);
+    }
+
+    public void addPolygonIntersection(FilledPolygon filledPolygon) {
+        drawables.pollLast();
+        drawables.pollLast();
+        drawables.add(filledPolygon);
     }
 
     public void clearDrawables() {

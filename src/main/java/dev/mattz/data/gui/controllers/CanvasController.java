@@ -2,6 +2,7 @@ package dev.mattz.data.gui.controllers;
 
 import dev.mattz.data.graphics.drawable_objects.*;
 import dev.mattz.data.graphics.drawable_objects.Polygon;
+import dev.mattz.data.graphics.rasterizers.line_clipping.SutherlandHodgmanClipper;
 import dev.mattz.data.gui.models.ColorPaletteModel;
 import dev.mattz.data.gui.views.CanvasView;
 import dev.mattz.data.gui.views.MainView;
@@ -16,6 +17,8 @@ public class CanvasController {
     private final ToolbarView toolbarView;
 
     private final ColorPaletteModel colorPaletteModel;
+
+    private final SutherlandHodgmanClipper sutherlandHodgmanClipper;
 
     private Point2D pointMoveModeSelectedPoint;
     private Point2D lineModeStartPoint, lineModeEndPoint;
@@ -33,6 +36,8 @@ public class CanvasController {
         canvasView.setFocusable(true);
 
         this.colorPaletteModel = ColorPaletteModel.getInstance();
+
+        this.sutherlandHodgmanClipper = new SutherlandHodgmanClipper();
 
         canvasView.addMouseListener(new MouseAdapter() {
             @Override
@@ -289,7 +294,8 @@ public class CanvasController {
                         if (tempIntersectionPolygon == null)
                             tempIntersectionPolygon = tempPolygon;
                         else {
-                            canvasView.addDrawable(new PolygonIntersection(tempIntersectionPolygon.getColor(), tempIntersectionPolygon, tempPolygon));
+                            FilledPolygon filledPolygon = sutherlandHodgmanClipper.intersect(tempIntersectionPolygon, tempPolygon);
+                            canvasView.addPolygonIntersection(filledPolygon);
                             tempIntersectionPolygon = null;
                         }
                     }
@@ -305,7 +311,6 @@ public class CanvasController {
             }
             canvasView.repaint();
         }
-
     }
 
     private Point2D snapToFixedAngle(Point2D start, Point2D current) {
