@@ -12,17 +12,6 @@ public class MainView3D extends JFrame {
 
     JMenu jMenuToolbar = new JMenu("Toolbar");
 
-    JMenu jMenuToolbarSubmenuLineMode = new JMenu("Line Mode");
-    JCheckBoxMenuItem jCheckBoxMenuItemLineGradient = new JCheckBoxMenuItem("Line Gradient");
-
-    JMenu jMenuToolbarSubmenuPolygonMode = new JMenu("Polygon Mode");
-    JCheckBoxMenuItem jCheckBoxMenuItemFillPolygon = new JCheckBoxMenuItem("Fill Polygon");
-
-    JMenu jMenuToolbarSubmenuSeedFillMode = new JMenu("Seed Fill Mode");
-    ButtonGroup buttonGroupSeedFillModes = new ButtonGroup();
-    JRadioButton jRadioButtonSeedFillBackground = new JRadioButton("Background mode");
-    JRadioButton jRadioButtonSeedFillBoundary = new JRadioButton("Boundary mode");
-
     JMenu jMenuCanvas = new JMenu("Canvas");
 
     JMenuItem jMenuCanvasClear = new JMenuItem("Clear");
@@ -75,37 +64,9 @@ public class MainView3D extends JFrame {
 
         jMenuCanvas.add(jMenuCanvasClear);
 
-        jMenuToolbar.add(jMenuToolbarSubmenuLineMode);
-        jMenuToolbar.add(jMenuToolbarSubmenuPolygonMode);
-        jMenuToolbar.add(jMenuToolbarSubmenuSeedFillMode);
-
-        jMenuToolbarSubmenuLineMode.add(jCheckBoxMenuItemLineGradient);
-
-        jMenuToolbarSubmenuPolygonMode.add(jCheckBoxMenuItemFillPolygon);
-
-        buttonGroupSeedFillModes.add(jRadioButtonSeedFillBackground);
-        buttonGroupSeedFillModes.add(jRadioButtonSeedFillBoundary);
-
-        jMenuToolbarSubmenuSeedFillMode.add(jRadioButtonSeedFillBackground);
-        jMenuToolbarSubmenuSeedFillMode.add(jRadioButtonSeedFillBoundary);
-
-        jRadioButtonSeedFillBackground.setSelected(true);
-
         jMenuCanvasClear.addActionListener(_ -> {
             canvasView3D.clearDrawables();
             canvasView3D.clearBufferedImage();
         });
-    }
-
-    public boolean isGradientLineSelected() {
-        return jCheckBoxMenuItemLineGradient.isSelected();
-    }
-
-    public boolean isPolygonFillSelected() {
-        return jCheckBoxMenuItemFillPolygon.isSelected();
-    }
-
-    public boolean isSeedFillBackgroundSelected() {
-        return jRadioButtonSeedFillBackground.isSelected();
     }
 }
