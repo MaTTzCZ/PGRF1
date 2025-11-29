@@ -1,8 +1,8 @@
 package dev.mattz.data.graphics.rasterizers.gradient_line;
 
-import dev.mattz.data.graphics.drawable_objects.Drawable2D;
+import dev.mattz.data.graphics.drawable_objects.Drawable;
 import dev.mattz.data.graphics.drawable_objects.GradientLine;
-import dev.mattz.data.graphics.drawable_objects.Point2D;
+import dev.mattz.data.graphics.drawable_objects.Point;
 import dev.mattz.data.graphics.rasterizers.Rasterizer;
 
 import java.awt.*;
@@ -16,7 +16,7 @@ public interface GradientLineRasterizer extends Rasterizer {
         graphics2D.dispose();
     }
 
-    default void draw(Point2D start, Point2D end, Color color1, Color color2, BufferedImage bufferedImage) {
+    default void draw(Point start, Point end, Color color1, Color color2, BufferedImage bufferedImage) {
         draw(start.getX(), start.getY(), end.getX(), end.getY(), color1, color2, bufferedImage);
     }
 
@@ -25,8 +25,8 @@ public interface GradientLineRasterizer extends Rasterizer {
     }
 
     @Override
-    default void draw(Drawable2D drawable2D, BufferedImage bufferedImage) {
-        GradientLine line = (GradientLine) drawable2D;
+    default void draw(Drawable drawable, BufferedImage bufferedImage) {
+        GradientLine line = (GradientLine) drawable;
         draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), line.getColor2(), bufferedImage);
     }
 

@@ -3,11 +3,11 @@ package dev.mattz.data.graphics.drawable_objects;
 import java.awt.*;
 import java.util.List;
 
-public class Line implements Drawable2D {
-    private final Point2D start, end;
+public class Line implements Drawable {
+    private final Point start, end;
     private final Color color;
 
-    public Line(Point2D start, Point2D end, Color color) {
+    public Line(Point start, Point end, Color color) {
         this.start = start;
         this.end = end;
         this.color = color;
@@ -34,7 +34,7 @@ public class Line implements Drawable2D {
     }
 
     @Override
-    public List<Point2D> getAllPoints() {
+    public List<Point> getAllPoints() {
         return List.of(start, end);
     }
 }

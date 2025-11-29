@@ -1,8 +1,8 @@
 package dev.mattz.data.graphics.rasterizers.line;
 
-import dev.mattz.data.graphics.drawable_objects.Drawable2D;
+import dev.mattz.data.graphics.drawable_objects.Drawable;
 import dev.mattz.data.graphics.drawable_objects.Line;
-import dev.mattz.data.graphics.drawable_objects.Point2D;
+import dev.mattz.data.graphics.drawable_objects.Point;
 import dev.mattz.data.graphics.rasterizers.Rasterizer;
 
 import java.awt.*;
@@ -16,18 +16,18 @@ public interface LineRasterizer extends Rasterizer {
         graphics2D.dispose();
     }
 
-    default void draw(Point2D start, Point2D end, Color color, BufferedImage bufferedImage) {
+    default void draw(Point start, Point end, Color color, BufferedImage bufferedImage) {
         draw(start.getX(), start.getY(), end.getX(), end.getY(), color, bufferedImage);
     }
 
-    default void draw(Line line, BufferedImage bufferedImage) {
-        draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), bufferedImage);
+    default void draw(Line line2D, BufferedImage bufferedImage) {
+        draw(line2D.getX1(), line2D.getY1(), line2D.getX2(), line2D.getY2(), line2D.getColor(), bufferedImage);
     }
 
     @Override
-    default void draw(Drawable2D drawable2D, BufferedImage bufferedImage) {
-        Line line = (Line) drawable2D;
-        draw(line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), bufferedImage);
+    default void draw(Drawable drawable, BufferedImage bufferedImage) {
+        Line line2D = (Line) drawable;
+        draw(line2D.getX1(), line2D.getY1(), line2D.getX2(), line2D.getY2(), line2D.getColor(), bufferedImage);
     }
 }
 

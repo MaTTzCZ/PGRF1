@@ -2,7 +2,7 @@ package dev.mattz.data.graphics.drawable_objects;
 
 import java.awt.*;
 
-public class SeedFillerBoundaryBasePoint extends Point2D {
+public class SeedFillerBoundaryBasePoint extends Point {
     private final Color fillColor;
     private final Color backgroundColor;
 

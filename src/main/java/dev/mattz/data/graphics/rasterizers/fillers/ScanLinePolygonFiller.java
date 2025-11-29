@@ -1,7 +1,7 @@
 package dev.mattz.data.graphics.rasterizers.fillers;
 
-import dev.mattz.data.graphics.drawable_objects.Drawable2D;
-import dev.mattz.data.graphics.drawable_objects.Point2D;
+import dev.mattz.data.graphics.drawable_objects.Drawable;
+import dev.mattz.data.graphics.drawable_objects.Point;
 import dev.mattz.data.graphics.rasterizers.PencilRasterizer;
 import dev.mattz.data.graphics.rasterizers.Rasterizer;
 
@@ -14,11 +14,11 @@ public class ScanLinePolygonFiller implements Rasterizer {
     PencilRasterizer pencilRasterizer = new PencilRasterizer();
 
     @Override
-    public void draw(Drawable2D drawable2D, BufferedImage bufferedImage) {
-        List<Point2D> points = drawable2D.getAllPoints();
+    public void draw(Drawable drawable, BufferedImage bufferedImage) {
+        List<Point> points = drawable.getAllPoints();
 
-        int minY = points.stream().mapToInt(Point2D::getY).min().orElse(0);
-        int maxY = points.stream().mapToInt(Point2D::getY).max().orElse(0);
+        int minY = points.stream().mapToInt(Point::getY).min().orElse(0);
+        int maxY = points.stream().mapToInt(Point::getY).max().orElse(0);
 
         for (int y = minY; y <= maxY; y++) {
             List<Integer> intersections = getIntersections(points, y);
@@ -28,17 +28,17 @@ public class ScanLinePolygonFiller implements Rasterizer {
                 int xEnd = intersections.get(i + 1);
 
                 for (int x = xStart; x <= xEnd; x++) {
-                    pencilRasterizer.draw(x, y, drawable2D.getColor(), bufferedImage);
+                    pencilRasterizer.draw(x, y, drawable.getColor(), bufferedImage);
                 }
             }
         }
     }
 
-    private static List<Integer> getIntersections(List<Point2D> points, int y) {
+    private static List<Integer> getIntersections(List<Point> points, int y) {
         List<Integer> intersections = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
-            Point2D p1 = points.get(i);
-            Point2D p2 = points.get((i + 1) % points.size());
+            Point p1 = points.get(i);
+            Point p2 = points.get((i + 1) % points.size());
 
             int y1 = p1.getY();
             int y2 = p2.getY();

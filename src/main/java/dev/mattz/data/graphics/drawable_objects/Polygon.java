@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Polygon implements Drawable2D {
-    private final LinkedList<Point2D> points;
+public class Polygon implements Drawable {
+    private final LinkedList<Point> points;
     private final Color color;
 
     public Polygon(Color color) {
@@ -13,12 +13,12 @@ public class Polygon implements Drawable2D {
         this.color = color;
     }
 
-    public void addPoint(Point2D point) {
+    public void addPoint(Point point) {
         points.add(point);
     }
 
 
-    public Point2D getPoint(int index) {
+    public Point getPoint(int index) {
         return points.get(index);
     }
 
@@ -27,7 +27,7 @@ public class Polygon implements Drawable2D {
     }
 
     @Override
-    public List<Point2D> getAllPoints() {
+    public List<Point> getAllPoints() {
         return points;
     }
 

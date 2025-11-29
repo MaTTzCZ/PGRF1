@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PencilStroke implements Drawable2D {
-    private final ArrayList<Point2D> points;
+public class PencilStroke implements Drawable {
+    private final ArrayList<Point> points;
     private final Color color;
 
     public PencilStroke(Color color) {
@@ -13,7 +13,7 @@ public class PencilStroke implements Drawable2D {
         this.color = color;
     }
 
-    public void addPoint(Point2D point){
+    public void addPoint(Point point){
         points.add(point);
     }
 
@@ -22,7 +22,7 @@ public class PencilStroke implements Drawable2D {
     }
 
     @Override
-    public List<Point2D> getAllPoints() {
+    public List<Point> getAllPoints() {
         return points;
     }
 }
